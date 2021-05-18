@@ -1,0 +1,4818 @@
+openapi: 3.0.0
+info:
+  title: pagueON APP
+  description: |
+    # Autenticação
+    A autenticação para as rotas são feitas utilizando JWT.
+    Em caso do token ser inválido será retornado um status code `403 - Forbidden` com a mensagem:
+    ~~~~
+    {
+      "message": "Sem permissão."
+    }
+    ~~~~
+    <!-- ReDoc-Inject: <security-definitions> -->
+
+    # Validação de campos nos dados de entrada
+    O pagueON APP valida cada um dos campos enviados na requisição antes de prosseguir com a criação, consulta ou gerenciamento dos pedidos, transações e recursos.
+
+    Caso um ou mais campos não sejam validados, será retornado o status code `422 - Unprocessable Entity` e o corpo da resposta conterá o nome dos campos como chave e um array de string descrevendo o erro pra cada campo, como visto abaixo.
+    ~~~~
+    {
+      "campo_errado_1": ["Descrição do erro do campo 1"],
+      "campo_errado_2": ["Descrição do erro do campo 2"]
+    }
+    ~~~~
+    # Paginação
+    Em rotas que possuem paginação, as respostas descritas aqui na documentação serão encapsuladas na seguinte estrutura:
+    ~~~~
+    {
+      "total_registros": 0,
+      "total_paginas": 0,
+      "registros": [
+        {resposta descrita na funcionalidade}
+      ],
+      "extra" : {
+        campos comuns caso existam, será descrito na rota se existem e quais são utilizados. 
+        Caso não exista, não será enviado
+      }
+    }
+    ~~~~
+  contact:
+    name: API Support
+    url: https://www.pagueon.com.br
+    email: desenvolvimento@pagueon.com.br
+  x-logo:
+    url: https://www.pagueon.com.br/static/img/logo-1.svg
+    href: /docs
+    altText: pagueON APP
+  version: "1.0"
+servers:
+  - url: https://api-mobile.pagueon.com/
+    variables: {}
+    description: Produção
+  - url: https://api-mobile-hgi.pagueon.com/
+    variables: {}
+    description: Homologação Gestora
+paths:
+  /gestor/v1/pessoafisica/{cd_usuario}:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Conta PF
+      summary: Cadastro complementar de pessoa física
+      description: Cadastro complementar de pessoa física
+      operationId: Cadastrocomplementardepessoafísica
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CadastroComplementarCorpo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Cliente não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "409":
+          description: Não foi possível cadastrar
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CadastroComplementarErroNaoFoiPossivel"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+    put:
+      security:
+        - JWT: []
+      tags:
+        - Conta PF
+      summary: Reenvio de dados de pessoa física
+      description: Reenvio de dados de pessoa física
+      operationId: Reenviodedadosdepessoafísica
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReenvioDadosCorpo"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Cliente não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "403":
+          description: Conta não possui alterações pendentes da etapa 2
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReenvioDadosErroConta"
+        "409":
+          description: Não foi possível reenviar
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReenvioDadosErroNaoFoiPossivel"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Pessoa Física
+      summary: Obter dados de pessoa física
+      description: Obter dados de pessoa física
+      operationId: Obterdadosdepessoafísica
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterPessoaFisica"
+        "404":
+          description: Cliente não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /gestor/v1/pessoafisica/{cd_usuario}/senha/validar:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Pessoa Física
+      summary: Validação da senha de movimentação financeira
+      description: Validação da senha de movimentação financeira da pessoa física
+      operationId: Validarsenhamovimentacaofinanceira
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidarSenhaCorpo"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SenhaFinanceiraValida"
+        "403":
+          description: Erro de permissão do usuário
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SenhaFinanceiraInvalida"
+        "404":
+          description: Cliente não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /gestor/v1/pessoafisica:
+    post:
+      tags:
+        - Pessoa Física
+      summary: Cadastro inicial de pessoa física
+      description: Cadastro inicial de pessoa física
+      operationId: Cadastroinicialdepessoafísica
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CadastroInicialPfCorpo"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CadastroInicialPf"
+        "409":
+          description: Erro no cadastro de pessoa física
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CadastroInicialPfErro"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /gestor/v1/contrato/conta-pf:
+    get:
+      tags:
+        - Termos/Contratos
+      summary: Contato do négocio Conta Digital PF
+      description: Obter contato mais recente do négocio de Conta Digital para pessoa física
+      operationId: Obtercontatodacontadepessoafísica
+      parameters: []
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTermo"
+        "503":
+          description: Erro na geração de link
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterContratoCarteiraCartaoErroLink"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterContratoContaPfErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/contrato/carteira-cartao:
+    get:
+      tags:
+        - Termos/Contratos
+      summary: Contato do négocio da Carteira de Cartões
+      description: Obter contato mais recente do négocio de Carteira de Cartões
+      operationId: Obtercontratodacarteiracartão
+      parameters: []
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTermo"
+        "503":
+          description: Erro na geração de link
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterContratoCarteiraCartaoErroLink"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterContratoCarteiraCartaoErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/termo/pagueon:
+    get:
+      tags:
+        - Termos/Contratos
+      summary: Termos e políticas da empresa pagueON
+      description: Obter os termos e políticas mais recentes da empresa pagueON
+      operationId: Obtertermo
+      parameters: []
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTermo"
+        "500":
+          description: Erro nos filtros
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTermoErroFiltro"
+        "503":
+          description: Erro na geração de link
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTermoErroLink"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTermoErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/pessoafisica/{cd_usuario}/verificar-abertura:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Conta PF
+      summary: Verificar aptidão para abertura de conta digital
+      description: Verificar aptidão para abertura de conta digital
+      operationId: Verificaraptidãoparaaberturadecontadigital
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarAbertura"
+        "403":
+          description: Idade não permitida
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarAberturaErroIdade"
+        "409":
+          description: Conta já solicitada
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarAberturaErroSolicitada"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/pessoafisica/verificar-email-valido:
+    post:
+      tags:
+        - Pessoa Física
+      summary: Verificar validade de email
+      description: Verificar validade de email
+      operationId: Verificarvalidadedeemail
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Email"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarEmail"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/pessoafisica/{cpf}/dispositivo/{imei}:
+    get:
+      tags:
+        - Pessoa Física
+      summary: Procurar pessoa física
+      description: Procurar pessoa física a partir do CPF e imei do dispositivo
+      operationId: Procurarpessoafísica
+      parameters:
+        - name: cpf
+          in: path
+          description: "CPF utilizando somente números, ex: 66137026094"
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: cpf
+            minLength: 9
+            maxLength: 9
+        - name: imei
+          in: path
+          description: Identificador único do dispositivo, pode ser um UUID ou uma sequência de números.
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisica"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/pessoafisica/{cd_usuario}/dispositivo:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Pessoa Física
+      summary: Procurar dispositivo vinculado a pessoa física
+      description: Procurar dispositivo vinculado a pessoa física a partir do CPF
+      operationId: Procurardispositivopessoafísica
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarDispositivoPessoaFisica"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/transferencias/{numero_documento}:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Transferências
+      summary: Obter beneficiário
+      description: Obter beneficiário
+      operationId: ObterBeneficiario
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            type: string
+            format: uuid
+        - name: numero_documento
+          in: path
+          description: "Número do documento do beneficiário"
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterBeneficiario"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ObterBeneficiarioNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/bancos:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Serviços Auxiliares
+      summary: Listar instituições bancárias
+      description: Listar instituições bancárias
+      operationId: ListarBancos
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListarBancos"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListarBancosIndisponivel"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/transferencias:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Transferências
+      summary: Realizar transferência bancária
+      description: Realizar transferência bancária
+      operationId: TransferenciaBancaria
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: Corpo da requisição
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferenciaBancariaCorpo"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferenciaBancaria"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtratoContaPfNaoEncontrado"
+        "400":
+          description: Não permitido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/RealizarTransferenciaErroHorario"
+                  - $ref: "#/components/schemas/RealizarTransferenciaErroContasIguais"
+                  - $ref: "#/components/schemas/RealizarTransferenciaErroSaldo"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransferenciaIndisponivel"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/transferencia/{cd_transferencia}:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Transferências
+      summary: Obter comprovante de transferência bancária
+      description: Obter comprovante de transferência bancária
+      operationId: ObterTransferenciaBancaria
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: cd_transferencia
+          in: path
+          description: Identificador da transferência
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTransferenciaBancaria"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ExtratoContaPfNaoEncontrado"
+                  - $ref: "#/components/schemas/ObterTransferenciaBancariaNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterTransferenciaBancariaIndisponivel"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/extrato:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Conta Digital PF
+      summary: Obter Extrato da conta digital PF
+      description: Obter Extrato da conta digital PF
+      operationId: ObterExtratodacontaPF
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: limit
+          in: query
+          description: "Número de registros retornados na página, ex: 20"
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: "Número de registros para pular no retorno da página, ex: 0"
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterExtratoContaPf"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtratoContaPfNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtratoContaPfIndisponivel"
+      deprecated: false
+  /contadigital/v1/endereco/cep/{cep}:
+    get:
+      tags:
+        - Serviços Auxiliares
+      summary: Obter Endereço pelo CEP
+      description: Obter Endereço pelo CEP
+      operationId: ObterEndereçopeloCEP
+      parameters:
+        - name: cep
+          in: path
+          description: "Utiliza-se somente números e com valor máximo de 8 dígitos. Exemplo: 49140000"
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterEndereco"
+        "400":
+          description: Cep inválido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnderecoInvalido"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnderecoNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/enviar-documento:
+    put:
+      security:
+        - JWT: []
+      tags:
+        - Conta Digital PF
+      summary: Envio dos Documentos (SELFIE, RG ou CNH)
+      description: Envio dos Documentos (SELFIE, RG ou CNH)
+      operationId: EnviodosDocumentos
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: ID do usuário retornado no login
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: Corpo do Documento
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentoBody"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtratoContaPfNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "502":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnviarDocumentoErroS3"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/historico-saldo:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Conta Digital PF
+      summary: Obter Histórico do Saldo Conta Pf
+      description: Obter Histórico pontual do Saldo da Conta Pf para construção do gráfico
+      operationId: ObterHistóricoSaldoContaPf
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterHistoricoSaldoContaPf"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoricoSaldoContaPfNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/boleto:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Boleto Depósito
+      summary: Emitir Boleto de Depósito
+      description: Emitir Boleto de depósito para saldo na conta digital PF
+      operationId: EmitirBoleto
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: Corpo do Boleto
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmitirBoletoBody"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmitirBoleto"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContaNaoEncontrada"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroEmissaoBoleto"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/boleto/{boleto}:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Boleto Depósito
+      summary: Obter Dados do Boleto
+      description: Obter Dados do Boleto
+      operationId: ObterDadosdoBoleto
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: boleto
+          in: path
+          description: Código de autenticação do boleto de depósito
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DadosBoleto"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContaNaoEncontrada"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroConsultaDadosBoleto"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/boleto/{boleto}/pdf:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Boleto Depósito
+      summary: Imprimir Boleto
+      description: Imprimir Boleto
+      operationId: ImprimirBoleto
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: boleto
+          in: path
+          description: Valor do boleto a ser depositado na conta digital
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Arquivo PDF do boleto em Bytes
+          headers: {}
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContaNaoEncontrada"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroEmissaoBoleto"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Conta Digital PF
+      summary: Obter dados e saldo da conta digital PF
+      description: Obter dados e saldo da conta digital PF
+      operationId: Obterdadosesaldodaconta
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterContaPf"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContaPfNaoEncontrada"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Listagem de cartões
+      description: Listagem de cartões
+      operationId: Listagemdecartões
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: status_reversivel
+          in: query
+          description: Booleano para indicar se o status do cartão é reversível
+          explode: true
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cartoes"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroListagemCartoes"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/aptidao:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Verificar aptidão para criar cartões
+      description: Verificar aptidão para criar cartões
+      operationId: Verificaraptidãoparacriarcartões
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarAptidaoCriarCartao"
+        "503":
+          description: Não foi possível consultar os cartões
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroCartoesConsulta"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/virtual:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Criar um cartão virtual
+      description: Criar um cartão virtual
+      operationId: Criarumcartãovirtual
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartaoSenha"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SucessoCriarCartaoVirtual"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroContaNaoEncontrada"
+        "403":
+          description: Usuário já possui um cartão virtual
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroUsuarioPossuiCartaoVirtual"
+        "503":
+          description: Não foi possível criar um cartão virtual
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroCartaoVirtualCriar"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Obter dados sigilosos de um cartão
+      description: Obter dados sigilosos de um cartão
+      operationId: Obterdadossigilososdeumcartão
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: Identificador do cartão
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartaoSenha"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ObterDadosSigilososCartao"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroContaNaoEncontrada"
+        "403":
+          description: Senha inválida
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroCartaoSenhaInvalida"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroCartaoConsulta"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Alterar a senha de um cartão
+      description: Alterar a senha de um cartão
+      operationId: Alterarasenhadeumcartão
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: "Proxy utilizando somente números, ex: 22999903520114195"
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartaoSenha"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlterarSenhaCartaoSucesso"
+        "403":
+          description: Proibido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlterarSenhaCartaoErroProibido"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlterarSenhaCartaoErroNaoFoiPossivel"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /contadigital/v1/boleto:
+    post:
+      tags:
+        - Pagamentos
+      summary: Consultar dados do boleto
+      description: Retorna as informaçãos sobre o boleto consultado
+      operationId: ValidarBoletocontaPF
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidarBoletoCorpo"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidarBoleto"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidarBoletoErroNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidarBoletoErroNaoFoiPossivel"
+      deprecated: false
+
+  /contadigital/v1/contas/{cd_usuario}/boleto/pagar:
+    post:
+      tags:
+        - Pagamentos
+      summary: Pagamento de um boleto
+      description: Realizar o pagamento de um boleto
+      operationId: Pagamentodeboleto
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PagarBoletoCorpo"
+
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagarBoletoRetorno"
+
+        "401":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagarBoletoNaoAutorizado"
+
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroContaNaoEncontrada"
+
+        "403":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/RealizarTransferenciaErroSaldo"
+                  - $ref: "#/components/schemas/PagarBoletoErroVencido"
+                  - $ref: "#/components/schemas/PagarBoletoErroHorario"
+                  - $ref: "#/components/schemas/PagarBoletoErroValorIgual"
+                  - $ref: "#/components/schemas/PagarBoletoErroValorMinimoMaximo"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagarBoletoErroNaoFoiPossivel"
+      deprecated: false
+
+  /contadigital/v1/contas/{cd_usuario}/pagamentos/{cd_pagamento}:
+    get:
+      tags:
+        - Pagamentos
+      summary: Comprovante de pagamento de um boleto
+      description: Obter comprovante de pagamento de um boleto
+      operationId: Comprovantepagamentodeboleto
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: cd_pagamento
+          in: path
+          description: "Identificador do pagamento gerado atráves da rota de pagamento"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComprovanteBoletoRetorno"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErroContaNaoEncontrada"
+                  - $ref: "#/components/schemas/ComprovantePagamentoNaoEncontrado"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComprovanteBoletoErroNaoFoiPossivel"
+      deprecated: false
+
+  /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}/cancelar:
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Cancelamento de cartão
+      description: Cancelamento de Cartão
+      operationId: Cancelamentdecartao
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: "Proxy utilizando somente números, ex: 22999903520114195"
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelarCartao"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErroContaNaoEncontrada"
+                  - $ref: "#/components/schemas/CartaoErroNaoEncontrado"
+                  - $ref: "#/components/schemas/StatusCartaoNaoEncontrado"
+        "409":
+          description: Conflito de estado do cartão
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelarCartaoErroConflito"
+        "401":
+          description: Senha Inválida
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SenhaCartaoErroSintatico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelarCartaoErroNaoFoiPossivel"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}/alternar-bloqueio:
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Alternar bloqueio de cartão
+      description: Alternar bloqueio de cartão
+      operationId: Alternarbloqueiodecartao
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: "Proxy utilizando somente números, ex: 22999903520114195"
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlternarBloqueioCartao"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErroContaNaoEncontrada"
+                  - $ref: "#/components/schemas/CartaoErroNaoEncontrado"
+                  - $ref: "#/components/schemas/StatusCartaoNaoEncontrado"
+        "409":
+          description: Conflito de estado do cartão
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BloquearCartaoErroConflito"
+                  - $ref: "#/components/schemas/DesbloquearCartaoErroConflito"
+        "401":
+          description: Senha Inválida
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SenhaCartaoErroSintatico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/BloquearCartaoErroNaoFoiPossivel"
+                  - $ref: "#/components/schemas/DesbloquearCartaoErroNaoFoiPossivel"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}/alternar-contactless:
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Alternar contactless de cartão físico
+      description: Alternar contactless de cartão físico
+      operationId: Alternarcontactlessdecartao
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: "Proxy utilizando somente números, ex: 22999903520114195"
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: contactless
+          in: query
+          description: "Flag booleana para alternar comportamento do contactless"
+          required: true
+          style: simple
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlternarContactlessCartao"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErroContaNaoEncontrada"
+                  - $ref: "#/components/schemas/CartaoErroNaoEncontrado"
+        "400":
+          description: Erro na requisição
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErroContactlessCartao"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/AlternarContactlessErroNaoFoiPossivel"
+      deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}/transacoes:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Listagem de transações
+      description: Listagem de transações
+      operationId: Listagemdetransações
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: "Proxy utilizando somente números, ex: 22999903520114195"
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: data[gte]
+          in: query
+          description: Data inicial no formato 2020-07-20
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: data[lte]
+          in: query
+          description: Data final no formato 2020-07-20
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: pagesize
+          in: query
+          description: Número de transações em cada página
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Utilizado para consultar a próxima página das transações
+          style: form
+          explode: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transacoes"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Erro na consulta das transações
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReenvioDadosErroConta"
+      deprecated: false
+  /autenticacao/v1/login:
+    post:
+      tags:
+        - Login/Logout
+      summary: Login do usuário
+      description: Gera o token para sessão do usuário
+      operationId: Gerartokendeusuário
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CriarTokenCorpo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CriarTokenSucesso"
+        "400":
+          description: Erros na criação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CriarTokenErros"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autenticacao/v1/revogar-token:
+    post:
+      tags:
+        - Login/Logout
+      summary: Logout do usuário
+      description: Revoga o token de sessão do usuário
+      operationId: Revogartokendeusuário
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevogarTokenCorpo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Token inválido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenovarTokenErroInvalido"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autenticacao/v1/renovar-token:
+    post:
+      tags:
+        - Login/Logout
+      summary: Refresh do token
+      description: Renova o token de sessão do usuário
+      operationId: Renovartokendeusuário
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenovarTokenCorpo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RenovarTokenSucesso"
+        "400":
+          description: Token inválido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevogarTokenErroInvalido"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autorizador/v1/gerar-codigo:
+    post:
+      tags:
+        - Dispositivo
+      summary: Gerar código de confirmação do dispositivo
+      description: Gerar código de confirmação do dispositivo
+      operationId: Gerarcódigodeconfirmaçãododispositivo
+      parameters: []
+      requestBody:
+        description: "Informções do dispositivo que "
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GerarCodigo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Codigo"
+        "403":
+          description: Não foi possível gerar código
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GerarCodigoErroNaoFoiPossivel"
+        "503":
+          description: Erro no envio do SMS
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GerarCodigoErroEnvio"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autorizador/v1/reenviar-codigo:
+    post:
+      tags:
+        - Dispositivo
+      summary: Reenviar código de confirmação do dispositivo
+      description: Reenviar código de confirmação do dispositivo
+      operationId: Reenviarcódigodeconfirmaçãododispositivo
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReenviarCodigo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodigoReenvio"
+        "400":
+          description: Chave inválida
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReenviarCodigoErroChaveInvalida"
+        "403":
+          description: Não foi possível reenviar código
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GerarCodigoErroNaoFoiPossivel"
+        "503":
+          description: Erro no envio do SMS
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GerarCodigoErroEnvio"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autorizador/v1/confirmar-codigo:
+    post:
+      tags:
+        - Dispositivo
+      summary: Validar código de confirmação do dispositivo
+      description: Validar código de confirmação do dispositivo
+      operationId: Validarcódigodeconfirmaçãododispositivo
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmarCodigo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodigoConfirmar"
+        "404":
+          description: Código não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfirmarCodigoErroNaoEncontrado"
+        "403":
+          description: Não foi possível confirmar código
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfirmarCodigoErroNaoFoiPossivel"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autorizador/v1/vincular-dispositivo:
+    post:
+      tags:
+        - Dispositivo
+      summary: Vincular dispositivo ao usuário
+      description: Vincular dispositivo ao usuário
+      operationId: Vinculardispositivoaousuário
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VincularDispositivo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VincularDispositivoOk"
+        "404":
+          description: Dispositivo ou Usuário não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DispositivoErroNaoEncontrado"
+        "409":
+          description: Vínculo já existe
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DispositivoErroVinculoExistente"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /autorizador/v1/desvincular-dispositivo:
+    post:
+      tags:
+        - Dispositivo
+      summary: Desvincular dispositivo do usuário
+      description: Desvincular dispositivo do usuário
+      operationId: Desvinculardispositivodousuário
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VincularDispositivo"
+        required: true
+      responses:
+        "201":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VincularDispositivoOk"
+        "404":
+          description: Dispositivo ou Usuário não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DesvincularDispositivoErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+components:
+  schemas:
+    ErroListagemCartoes:
+      title: ErroListagemCartoes
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível consultar os cartões.
+    ReenvioDadosErroConta:
+      title: ReenvioDadosErroConta
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Conta não possui alterações pendentes da etapa 2.
+    ReenvioDadosErroNaoFoiPossivel:
+      title: ReenvioDadosErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message"
+    CadastroComplementarErroNaoFoiPossivel:
+      title: CadastroComplementarErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message1"
+    ReenvioDadosCorpo:
+      title: ReenvioDadosCorpo
+      required:
+        - nome_completo
+        - nome_mae
+        - email
+      type: object
+      properties:
+        nome_completo:
+          description: Nome completo assim como no documento do cliente
+          type: string
+          example: Robertinho da Silva
+        nome_mae:
+          description: Nome da mãe do cliente assim como no documento
+          type: string
+          example: Robertinha da Silva
+        nome_social:
+          description: Nome social do cliente caso existente. [Saiba mais](https://www.mds.gov.br/webarquivos/publicacao/assistencia_social/Folders/cartilha_nome_social.pdf)
+          type: string
+          example: Robertinha da Silva
+        email:
+          description: Email do cliente cadastrado
+          type: string
+          example: abc@gmail.com
+    ObterPessoaFisica:
+      title: ObterPessoaFisica
+      required:
+        - nome_preferencia
+        - nome_completo
+        - data_nascimento
+        - genero
+        - ddd
+        - telefone
+        - foto
+      type: object
+      properties:
+        nome_preferencia:
+          description: Nome que o cliente gostaria de ser chamado
+          type: string
+          example: Robertinho
+        nome_completo:
+          description: Nome completo assim como no documento do cliente
+          type: string
+          example: Robertinho da Silva
+        nome_mae:
+          description: Nome da mãe do cliente assim como no documento
+          type: string
+          example: Robertinha da Silva
+        nome_social:
+          type: string
+          description: Nome social do cliente caso existente. [Saiba mais](https://www.mds.gov.br/webarquivos/publicacao/assistencia_social/Folders/cartilha_nome_social.pdf)
+          example: Robertinha da Silva
+        email:
+          type: string
+          description: Email do cliente cadastrado
+          example: abc@gmail.com
+        cep:
+          type: string
+          description: CEP do endereço do cliente
+          example: "9999999"
+        logradouro:
+          type: string
+          description: Logradouro do endereço do cliente
+          example: rua A
+        numero:
+          type: integer
+          description: Número do endereço do cliente
+          format: int32
+          example: 100
+        bairro:
+          type: string
+          description: Bairro do endereço do cliente
+          example: ABC
+        complemento:
+          type: string
+          description: Complemento do endereço do cliente
+          example: dspoqwkeq
+        municipio:
+          type: string
+          description: Município do endereço do cliente
+          example: Aracaju
+        uf:
+          type: string
+          description: Estado do endereço do cliente
+          example: SE
+        data_nascimento:
+          description: Data de nascimento do cliente de acordo com o documento
+          type: string
+          example: 2002-01-01
+        genero:
+          description: Gênero com o qual o cliente se identifica
+          type: string
+          example: M
+        ddd:
+          description: DDD do telefone cadastrado para o cliente
+          type: string
+          example: "79"
+          minLength: 2
+          maxLength: 2
+        telefone:
+          description: Telefone cadastrado do cliente
+          type: string
+          example: "999999999"
+        foto:
+          description: Foto cadastrada para o cliente
+          type: string
+          example: Bytes da foto em b64
+    ValidarSenhaCorpo:
+      title: ValidarSenhaCorpo
+      type: object
+      properties:
+        senha:
+          description: Senha de movimentação financeira cadastrada pelo cliente
+          type: string
+          example: 123456
+          minLength: 6
+          maxLength: 6
+    CadastroComplementarCorpo:
+      title: CadastroComplementarCorpo
+      required:
+        - cpf
+        - nome_preferencia
+        - nome_completo
+        - nome_mae
+        - email
+        - cep
+        - logradouro
+        - numero
+        - bairro
+        - municipio
+        - uf
+      type: object
+      properties:
+        nome_preferencia:
+          description: Nome que o cliente gostaria de ser chamado
+          type: string
+          example: Robertinho
+        nome_completo:
+          description: Nome completo assim como no documento do cliente
+          type: string
+          example: Robertinho da Silva
+        nome_mae:
+          description: Nome da mãe do cliente assim como no documento
+          type: string
+          example: Robertinha da Silva
+        nome_social:
+          type: string
+          description: Nome social do cliente caso existente. [Saiba mais](https://www.mds.gov.br/webarquivos/publicacao/assistencia_social/Folders/cartilha_nome_social.pdf)
+          example: Robertinha da Silva
+        email:
+          description: Email do cliente cadastrado
+          type: string
+          example: abc@gmail.com
+        cep:
+          description: CEP do endereço do cliente
+          type: string
+          example: "9999999"
+        logradouro:
+          description: Logradouro do endereço do cliente
+          type: string
+          example: rua A
+        numero:
+          description: Número do endereço do cliente
+          type: integer
+          format: int32
+          example: 100
+        bairro:
+          description: Bairro do endereço do cliente
+          type: string
+          example: ABC
+        complemento:
+          description: Complemento do endereço do cliente
+          type: string
+          example: dspoqwkeq
+        municipio:
+          description: Município do endereço do cliente
+          type: string
+          example: Aracaju
+        uf:
+          description: Estado do endereço do cliente
+          type: string
+          example: SE
+    ObterExtratoContaPf:
+      title: ObterExtratoContaPf
+      required:
+        - total
+      type: object
+      properties:
+        total:
+          description: Número total de items retornados
+          type: number
+          example: 19
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExtratoContaPfModel"
+          description: Transações registradas no extrato
+          example:
+            - tipo: TRANSFERÊNCIA
+              valor: 0.01
+              operacao: DÉBITO
+              data_hora: 22/03/2021 15:14:12
+            - tipo: DEPÓSITO
+              valor: 0.01
+              operacao: CRÉDITO
+              data_hora: 22/03/2021 15:14:12
+    ObterBeneficiario:
+      title: ObterBeneficiario
+      type: object
+      properties:
+        agencia:
+          description: Agência bancária
+          type: number
+          example: 0001
+        conta:
+          description: Conta bancária
+          type: number
+          example: 17122
+        numero_documento:
+          description: Número do documento
+          type: string
+          example: "99999999999"
+        nome:
+          type: string
+          example: Fulano
+    ObterTransferenciaBancaria:
+      title: ObterTransferenciaBancaria
+      type: object
+      properties:
+        identificador:
+          description: Identificador da transferência
+          type: number
+          example: 314446bb-8044-4e42-9210-82e33fe1b925
+        valor:
+          description: Valor absoluto da transferência
+          type: number
+          example: 15.35
+        pagador:
+          type: object
+          properties:
+            numero_documento:
+              type: string
+              example: "99999999999"
+            nome:
+              type: string
+              example: Fulano
+            conta:
+              type: object
+              properties:
+                agencia:
+                  type: string
+                  example: 00001
+                numero:
+                  type: string
+                  example: 182125
+                banco:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                      example: Acesso Soluções de Pagamento S.A.
+                    ispb:
+                      type: string
+                      example: 13140088
+                    compe:
+                      type: string
+                      example: 033
+        beneficiario:
+          type: object
+          properties:
+            numero_documento:
+              type: string
+              example: "99999999999"
+            nome:
+              type: string
+              example: Fulano
+            conta:
+              type: object
+              properties:
+                agencia:
+                  type: string
+                  example: 00001
+                numero:
+                  type: string
+                  example: 182125
+                banco:
+                  type: object
+                  properties:
+                    nome:
+                      type: string
+                      example: Acesso Soluções de Pagamento S.A.
+                    ispb:
+                      type: string
+                      example: 13140088
+                    compe:
+                      type: string
+                      example: 033
+                tipo:
+                  type: string
+                  example: DEPOSIT
+        canal:
+          type: string
+          example: INTERNAL
+        status:
+          type: string
+          example: DONE
+        data_cadastro:
+          type: string
+          example: 05/05/2021 06:16:48
+        data_atualizacao:
+          type: string
+          example: 05/05/2021 06:16:48
+    TransferenciaBancariaCorpo:
+      title: ExtratoContaPfModel
+      required:
+        - valor
+        - descricao
+        - beneficiario
+      type: object
+      properties:
+        valor:
+          description: Valor absoluto da transferência
+          type: number
+          example: 15.35
+        descricao:
+          description: Descrição da transferência
+          type: string
+          example: Dinheiro emprestado
+        beneficiario:
+          type: object
+          properties:
+            codigo_banco:
+              type: string
+              example: 033
+            agencia:
+              type: string
+              example: 00001
+            conta:
+              type: string
+              example: 182125
+            numero_documento:
+              type: string
+              example: "999999999999"
+            nome:
+              type: string
+              example: Fulano
+            tipo_conta:
+              type: string
+              enum:
+                - corrente
+                - poupança
+    TransferenciaBancaria:
+      title: TransferenciaBancaria
+      type: object
+      properties:
+        identificador:
+          type: string
+          example: 2b7946d2-06c5-43b7-94b5-5701347a6e92
+    ExtratoContaPfModel:
+      title: ExtratoContaPfModel
+      required:
+        - tipo
+        - valor
+        - operacao
+        - data_hora
+      type: object
+      properties:
+        tipo:
+          description: Tipo de registro da transação
+          type: string
+          enum: [TRANSFERÊNCIA, DEPÓSITO]
+          example: TRANSFERÊNCIA
+        valor:
+          description: Valor absoluto da transação
+          type: number
+          example: 0.01
+        operacao:
+          description: Tipo de operação no saldo
+          type: string
+          enum: [DÉBITO, CRÉDITO]
+          example: DÉBITO
+        data_hora:
+          description: Data/Hora da transação
+          type: string
+          example: 22/03/2021 15:14:12
+    ObterTransferenciaBancariaNaoEncontrado:
+      title: ObterTransferenciaNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Transferência não encontrada
+          type: string
+          example: Transferência não encontrada.
+    ExtratoContaPfNaoEncontrado:
+      title: ExtratoContaPfNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Conta digital não encontrada
+          type: string
+          example: Conta digital não encontrada.
+    ObterBeneficiarioNaoEncontrado:
+      title: ObterBeneficiarioNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Beneficiário não encontrado.
+          type: string
+          example: Beneficiário não encontrado.
+    RealizarTransferenciaErroSaldo:
+      title: RealizarTransferenciaErroSaldo
+      type: object
+      properties:
+        message:
+          description: Valor está acima do saldo da conta.
+          type: string
+          example: Valor está acima do saldo da conta.
+    RealizarTransferenciaErroContasIguais:
+      title: RealizarTransferenciaErroContasIguais
+      type: object
+      properties:
+        message:
+          description: Conta do pagador e beneficiário devem ser diferentes.
+          type: string
+          example: Conta do pagador e beneficiário devem ser diferentes.
+    RealizarTransferenciaErroHorario:
+      title: RealizarTransferenciaErroHorario
+      type: object
+      properties:
+        message:
+          description: Transferência fora do horário disponível.
+          type: string
+          example: Transferência fora do horário disponível.
+    ObterTransferenciaBancariaIndisponivel:
+      title: TransferenciaIndisponivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível efetuar a transferência.
+    TransferenciaIndisponivel:
+      title: TransferenciaIndisponivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível efetuar a transferência.
+    ExtratoContaPfIndisponivel:
+      title: ExtratoContaPfIndisponivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível solicitar o extrato.
+    CadastroInicialPfCorpo:
+      title: CadastroInicialPfCorpo
+      required:
+        - cpf
+        - nome_preferencia
+        - nome_completo
+        - data_nascimento
+        - genero
+        - ddd
+        - telefone
+        - device_id
+        - senha_cadastro
+        - senha_movimentacao
+      type: object
+      properties:
+        cpf:
+          type: string
+          example: "00000000000"
+        nome_preferencia:
+          type: string
+          example: Robertinho
+        nome_completo:
+          type: string
+          example: Robertinho da Silva
+        data_nascimento:
+          type: string
+          example: 2002-01-01
+        genero:
+          type: string
+          example: M
+        ddd:
+          type: string
+          example: "79"
+        telefone:
+          type: string
+          example: "999999999"
+        device_id:
+          type: string
+          example: 8aac07cc-9a52-483d-bbbd-a0e6739fadd3
+        senha_cadastro:
+          type: string
+          example: dspoqwkeq
+        senha_movimentacao:
+          type: string
+          example: "999999"
+    CadastroInicialPf:
+      title: CadastroInicialPf
+      required:
+        - sucesso
+      type: object
+      properties:
+        sucesso:
+          description: Sucesso no cadastro do cliente
+          type: boolean
+          example: true
+    ObterContratoContaPfErroNaoEncontrado:
+      title: ObterContratoContaPfErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Caso contratos vigentes não sejam encontrados
+          type: string
+          example: Contrato vigente não encontrado.
+    CadastroInicialPfErro:
+      title: CadastroInicialPfErro
+      type: object
+      properties:
+        message:
+          description: Erro no cadastro inicial do cliente
+          type: string
+          example: Erro no cadastro de pessoa física.
+    ObterContratoCarteiraCartaoErroLink:
+      title: ObterContratoCarteiraCartaoErroLink
+      type: object
+      properties:
+        message:
+          description: Erro ao gerar link de download do PDF
+          type: string
+          example: Ocorreu um problema ao gerar o link do documento
+    ObterContratoCarteiraCartaoErroNaoEncontrado:
+      title: ObterContratoCarteiraCartaoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Caso contratos vigentes não sejam encontrados
+          type: string
+          example: Contrato vigente não encontrado.
+    ObterTermoErroFiltro:
+      title: ObterTermoErroFiltro
+      type: object
+      properties:
+        message:
+          type: string
+          example: Erro nos filtros dos campos
+    ObterTermoErroNaoEncontrado:
+      title: ObterTermoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Caso termos vigentes não sejam encontrados
+          type: string
+          example: Não existe termo vigente
+    ObterTermoErroLink:
+      title: ObterTermoErroLink
+      type: object
+      properties:
+        message:
+          description: Erro ao gerar link de download do PDF
+          type: string
+          example: Ocorreu um problema ao gerar o link do documento
+    ObterTermo:
+      title: ObterTermo
+      required:
+        - conteudo
+        - link
+      type: object
+      properties:
+        conteudo:
+          description: Conteúdo formatado em HTML do documento
+          type: string
+          example: Conteúdo do documento
+        link:
+          description: Link para download do documento em formato PDF
+          type: string
+          example: URL de um link da AWS
+    VerificarEmail:
+      title: VerificarEmail
+      required:
+        - valido
+      type: object
+      properties:
+        valido:
+          description: O email é válido para o cliente
+          type: boolean
+          example: true
+    Email:
+      title: Email
+      required:
+        - cpf
+        - email
+      type: object
+      properties:
+        cpf:
+          description: CPF cadastrado do cliente
+          type: string
+          example: "00000000000"
+          format: cpf
+          minLength: 9
+          maxLength: 9
+        email:
+          description: Email para verificar validade
+          type: string
+          example: abcde@gmail.com
+    VerificarAbertura:
+      title: VerificarAbertura
+      type: object
+      properties:
+        apto:
+          description: O cliente está apto para abrir conta digital
+          type: boolean
+          example: true
+    VerificarAberturaErroSolicitada:
+      title: VerificarAberturaErroSolicitada
+      type: object
+      properties:
+        message:
+          description: O cliente já possui uma conta digital aberta
+          type: string
+          example: Conta não pode ser solicitada novamente
+    VerificarAberturaErroIdade:
+      title: VerificarAberturaErroIdade
+      type: object
+      properties:
+        message:
+          description: A idade do cliente não permite abrir conta digital
+          type: string
+          example: Idade do usuário é menor que 16 anos
+    AlterarSenhaCartaoSucesso:
+      title: CartaoSenhaSucesso
+      type: object
+      properties:
+        sucesso:
+          type: boolean
+          example: true
+    CartaoSenha:
+      title: CartaoSenha
+      required:
+        - senha
+      type: object
+      properties:
+        senha:
+          description: Senha para ser cadastrada no cartão
+          type: string
+          example: "1214"
+    ObterDadosSigilososCartao:
+      title: ObterDadosSigilososCartao
+      required:
+        - numero
+        - cvv
+        - validade
+        - nome
+        - apelido
+        - bloqueado
+        - contactless
+      type: object
+      properties:
+        numero:
+          description: Número do cartão
+          type: string
+          example: "000000000000000"
+        cvv:
+          description: Código CVV do cartão
+          type: string
+          example: "000"
+        validade:
+          description: Validade do cartão
+          type: string
+          example: 05/09
+        nome:
+          description: Nome impresso no cartão
+          type: string
+          example: Jose da Silva
+        apelido:
+          description: Apelido do cartão
+          type: string
+          example: Cartão Virtual
+        bloqueado:
+          description: Booleano para indicar se o cartão está bloqueado
+          type: boolean
+          example: false
+        contactless:
+          description: Booleano para indicar se o contactless está ativado
+          type: boolean
+          example: false
+    AlterarSenhaCartaoErroProibido:
+      title: AlterarSenhaCartaoErroProibido
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message2"
+    DesbloquearCartao:
+      title: DesbloquearCartao
+      type: object
+      properties:
+        value:
+          description: Sucesso ao desbloquear o cartão
+          type: string
+          example: Cartão desbloqueado com sucesso.
+    AlternarBloqueioCartao:
+      title: AlternarBloqueioCartao
+      type: object
+      properties:
+        bloqueado:
+          description: Status atual do cartão
+          type: boolean
+    AlternarContactlessCartao:
+      title: AlternarContactlessCartao
+      type: object
+      properties:
+        ativado:
+          description: Status atual do contactless
+          type: boolean
+    StatusCartaoNaoEncontrado:
+      title: StatusCartaoNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Status do cartão não encontrado
+          type: string
+          example: Status do cartão não encontrado.
+    CartaoErroNaoEncontrado:
+      title: CartaoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Cartão não encontrado
+          type: string
+          example: Cartão não encontrado.
+    BloquearCartaoErroConflito:
+      title: BloquarCartaoErroConflito
+      type: object
+      properties:
+        message:
+          description: Erro de conflito no status do cartão
+          type: string
+          enum:
+            - "O cartão precisa estar ativo, para realizar o bloqueio."
+          example: "O cartão precisa estar ativo, para realizar o bloqueio."
+    DesbloquearCartaoErroConflito:
+      title: DesbloquarCartaoErroConflito
+      type: object
+      properties:
+        message:
+          description: Erro de conflito no status do cartão
+          type: string
+          enum:
+            - "O cartão precisa estar bloqueado, para realizar o desbloqueio."
+          example: "O cartão precisa estar bloqueado, para realizar o desbloqueio."
+    CancelarCartao:
+      title: CancelarCartao
+      type: object
+      properties:
+        sucesso:
+          description: Sucesso no cancelamento do cartão
+          type: boolean
+
+    SenhaCartaoErroSintatico:
+      title: SenhaCartaoSintatico
+      type: object
+      properties:
+        message:
+          description: Senha do cartão inválida
+          type: string
+          example: Senha do cartão inválida.
+    CancelarCartaoErroConflito:
+      title: CancelarCartaoErroConflito
+      type: object
+      properties:
+        message:
+          description: Erro de conflito no status do cartão
+          type: string
+          enum:
+            - "O cartão não pôde ser cancelado."
+            - "Status inválido para um cartão virtual."
+          example: "O cartão não pôde ser cancelado."
+    CancelarCartaoErroNaoFoiPossivel:
+      title: CancelarCartaoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível cancelar o cartão.
+    BloquearCartaoErroNaoFoiPossivel:
+      title: BloquearCartaoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível bloquear o cartão.
+    DesbloquearCartaoErroNaoFoiPossivel:
+      title: DesbloquearCartaoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível desbloquear o cartão.
+    AlterarSenhaCartaoErroNaoFoiPossivel:
+      title: AlterarSenhaCartaoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível alterar senha do cartão.
+    AlternarContactlessErroNaoFoiPossivel:
+      title: AlternarContactlessErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível alternar o contactless.
+    Cartao:
+      title: Cartao
+      type: object
+      properties:
+        apelido:
+          type: string
+          example: esse funciona
+        portador:
+          type: string
+          example: João da Silva
+        numero:
+          type: string
+          example: 5399 1112 9052 9463
+        validade:
+          type: string
+          example: 11/2021
+        cvv:
+          type: string
+          example: "805"
+        status:
+          $ref: "#/components/schemas/Status"
+        tipo:
+          $ref: "#/components/schemas/Tipo"
+    SenhaFinanceiraValida:
+      title: SenhaFinanceiraValida
+      type: object
+      properties:
+        valida:
+          description: Senha financeira está correta
+          type: boolean
+          example: true
+    SenhaFinanceiraInvalida:
+      title: SenhaFinanceiraInvalida
+      type: object
+      properties:
+        message:
+          description: Senha financeira está incorreta
+          type: string
+          enum:
+            - Senha inválida.
+            - Sem permissão.
+          example: Senha inválida.
+    VerificarPessoaFisicaErroNaoEncontrado:
+      title: VerificarPessoaFisicaErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Cliente não foi encontrado
+          type: string
+          example: Cliente não encontrado.
+    ObterPessoaFisicaErroDispositivoNaoEncontrado:
+      title: ObterPessoaFisicaErroDispositivoNaoEncontrado
+      type: object
+      properties:
+        message:
+          type: string
+          example: Não há dispositivo vinculado a este usuário.
+    ErroGenerico:
+      title: ErroGenerico
+      type: object
+      properties:
+        message:
+          description: Erro inesperado na aplicação
+          type: string
+          example: Ocorreu um erro inesperado.
+    ErroValidacao:
+      title: ErroValidacao
+      type: object
+      properties:
+        campo:
+          type: array
+          items:
+            type: string
+          description: Nome do campo que gerou o erro
+    VerificarPessoaFisica:
+      title: VerificarPessoaFisica
+      required:
+        - nome
+        - dispositivo_vinculado
+      type: object
+      properties:
+        nome:
+          type: string
+          description: Nome de preferência cadastro para o cliente
+          example: Edson
+        dispositivo_vinculado:
+          type: boolean
+          description: Booleano que representa o vinculo do dispositivo
+          example: true
+        foto:
+          type: string
+          description: Bytes da foto em base64
+          example: iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAMAAAAKE/YAAAAAmVBMVEX///81NTgAer7b29vOzs9CQkW1tbdpaWtdXV/z8/NPT1L6+vqqqqucnJ/CwsMAfL/n5+c9PUB3d3kAgMG+vr/39/e4uLrq6uqioqVXV1uWlpeNjY8AiMR9fX/W1taFhYegyOUAhcPp8vjb6/WlpaY+mM3h7vaTwODE3e5HR0uqzuh8tdpFm8631upxsdljqdUjkMiWw+LP4/FTOcfoAAAHU0lEQVR4nO2ZaXuquhaAY4nMIKCIQp3a2mrt4O3//3E3WRkMCB1sz8YP6332czZkB3hZWVkJHkIQBEEQBEEQBEEQBEEQBEEQBEEQBEEQBEEQBEEQBEGQb7E7bG/HN8BofHt8fw76NvqCu8Px5pzxy3PfYt2sb1uMJdvXvu3aCA7jbmWI9+Hq8uQrZUjxt6vSfm0o8xl4PG7OXmS87ttUE7yYYse311NA79bv9UQ/XkmwP4yAHtctUq/b0WkM7v69YAsHbTR67zTSheU6isjLSTkXLfeH7WY8uhnxxH7bqX4fUMHf+tI0CfRicnyEhvuX5uw7PsmM+bi9Ofaoqsn1LHuC89fW5WX0ci+6r68hofON1NqA1X3bGi7Dfd+3qyJQcd1CAryNOp0Z71dS67bKh5/c1TKDTcLbxtoyvo5gPwpPqAi7k+Foq3P34+30KuNrSGjOO5M58INnnRqbp3qXuzf5OtdRoTnPI4jzsw7n/1o6PY1VDl0JML20s5iR7FNgM4LEPh6gegfvN7d9Sraxk7kxgjC/1gvfBtaWj8eeHc+Qk23El+yP8+WlNWV6R6zlUNIOrbV6eyU1us6BxZk7b9uUWYr07dfObrMzVkiYhHynJ7mOZaUdPQPHb3LLJ2r0ul+tT3lXQTYn3np889Kb0TeQn1239eU6ONv3W/E0tv6Z1VcEfB424mp54u+JDyxI6A84wxX994LtPI229QbPT2dQ72xQHbjZQONcS7ibdaLicgXR0jXSaR+KbUwqYyWhIOcX7dKDgd2fpwlNB3M97MFcuM3zDunBVSS2x6dZOpNnkXJbdEn7ea+6glLOsQTOpq6OqCk9d4f6OPrWbfMlVWVI4VnUam5pWNuy0a31ZjFNzKtSobJXwx6qSqGl04jflqrXGX6+lxoy3GQBt3VnWigP4fph5WW8B+RjYDtwxyxZ8DYa8v9mor/Fj31xKG7mz/QYP0gxfpfd+oOcJmCpnOXr5I5siD+Vhkv0uOwnopX6Or3giD9uOVdtQ2ijEC9HSkM7P9IZO/CX8hnS5AGWb7YHYd+FsjCrx6h0J4UclOpLaRO4fJI2Wpl03Gxrl14ZPVJhHYgrhzlZ6++CZe1W6WniyeuzH0kPWKyXTT8mbZ21tUrLTBiK3ntIt0S0LQhRPyiwT0PfvJV78rHPWrqlh6uoksu/J+soa1rttbSYIvsqLNXj2qTF6GYWCaZw6Yr/m4xqSXZ6X61TRuBcJJ3xkARiWkRTERjelMvRsuJTm+zWKl1qU5KAdWFK68/zm7s/kHZlheF7goGfmfcRM8ZaQJvstuqU5mPkFx4Ajw+JTo+MPBqRVmN4ubSqn6KgpiIhBOKJ1r7WrUvaGzRZEHMi6p8mGxPxImldyvWg+boDJPhSBFLhdkhbZ9KOcdcZuRffh+O7Rsm7RDrVZ3pfO28I1l/E6ZCux08/XC6ArAI+bkej8Uuul0S1vl8S6aIWVniAqpwBLDyi4On18nxxEUMBuTSzDGA1V8v4UK1zMzUO9i+kS3kCAU1BSe1pRSmxXDG+AlFKKPy1D07PmhNutzh/iF4ls0niWaEODf2NtJxiBehmUEPEdoPtKYQ0PFbuEEQxG1AxR+FNYO/JdCG95Bw29jx5bSnRrMivpNMyIZ5dk0lnBSke5K7EEqtGGhXEC/fqRUXEVtSyhdREjIEPOWHvja38+RrLxfLfSRtkevtrYOk0PEGbW/h5IKdtWk0e+IHx2XS2c2HdT59bv5X22WwLnGarZRSWk3S9DbZHydBsMvbyy2aGOB75K2kXConXNGTS+eJc2jPeLhWlYWlY++avAV5lXjwMTcVLpP2JTNNhpGaPrQKzcKW02eZIaRJEatj1zxWJeuG0anzjJHqv5Ybyn2IXWJ06yZaWEtSUZrNr4WTV1HhKQKvMcaolmYQM+Q+0ZN3KpUgLWXHCzJ07lfn9bJXO3F2EBTknie3Qpl9/sH2BkP4hzkm6Fy6ShmxKvu73X3GJNFTj9Bf/86Hj59FZ8s1A/EC6kF+9hVz+WsmDhBdNtlaxDA48dhR4HjsNuI9XkCBPAhKySlN4cA439PhlAYny3MsL0fBH0pbPv6P0l3pHSseZHU2TarqKvNV0VfGjMqrsajWtghmb0tSZVl4ZksieTeIHm98lsqNJnE2rPKK0rOyIlPbD5z/nfVuaQgH2HVm2umpSzIajZJUziVj5CCp25FUR24taJKaZbWdxTKxJbBWsTpc04s4JEyxjSpaUS7MksRas359IN3YP864BjKeGdC6lWY1PCI3LJLEoZZZSmuTxTEmz7/2YSbOu4ZLl9uc/Un870pHp7LYVYSGdhdGEJUXF06OS6SGkKaQHl6a2Sg++MJY8PQxpr2TF/G+kCdXb4EHV/asmC2KuJ2ISiolI+FkekIIFP+cnhZhshagWCZ+IbIp67A90LTpj8lNpEsQLltCpW35WmIxqRqPoGn6yRRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAE6Yf/A2i3bVFEJXJHAAAAAElFTkSuQmCC
+    VerificarDispositivoPessoaFisica:
+      title: VerificarDispositivoPessoaFisica
+      required:
+        - telefone
+      type: object
+      properties:
+        telefone:
+          type: string
+          description: Telefone que receberá o código por SMS
+          example: "79999999999"
+        modelo:
+          type: string
+          description: Modelo do último dispositivo vinculado ao cliente
+          example: Samsung M20
+    Cartoes:
+      title: Cartoes
+      required:
+        - nome
+        - proxy
+        - tipo
+        - final
+        - apelido
+        - status
+        - data_criacao
+      type: object
+      properties:
+        nome:
+          description: Nome impresso no cartão
+          type: string
+          example: Edson L de Souza
+        proxy:
+          description: Proxy para identificar o cartão
+          type: string
+          example: "2229131000012135780"
+        tipo:
+          description: Indica o tipo do cartão
+          type: string
+          enum: [Virtual, Físico]
+          example: Virtual
+        final:
+          description: Dígitos finais do cartão
+          type: string
+          example: 0845
+        apelido:
+          description: Apelido do cartão
+          type: string
+          example: Meu Apelido
+        status:
+          description: Status do cartão
+          $ref: "#/components/schemas/Status"
+        data_criacao:
+          description: Data de criação do cartão
+          type: string
+          example: 2021-02-04T16:37:23.846
+    Transacoes:
+      title: Transacoes
+      type: object
+      properties:
+        meta:
+          $ref: "#/components/schemas/Meta"
+        dados:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dado"
+          description: ""
+          example:
+            - valor: 97.79
+              descricao: EC*MERCADOLIVRE
+              data_hora: 2020-07-20T22:55:12
+            - valor: 107.79
+              descricao: EC*MERCADOLIVRE
+              data_hora: 2020-07-20T22:55:12
+    ObterEndereco:
+      title: ObterEndereco
+      required:
+        - uf
+        - cidade
+        - bairro
+        - logradouro
+        - cep
+      type: object
+      properties:
+        uf:
+          description: Estado do endereço
+          type: string
+          example: SE
+        cidade:
+          description: Cidade do endereço
+          type: string
+          example: Aracaju
+        bairro:
+          description: Bairro do endereço
+          type: string
+          example: Siqueira Campos
+        logradouro:
+          description: Logradouro do endereço
+          type: string
+          example: Avenida Augusto Franco
+        cep:
+          description: CEP do endereço
+          type: string
+          example: "49075100"
+        complemento:
+          description: Complemento do endereço
+          type: string
+          example: Próximo ao campo de areia
+    EnderecoNaoEncontrado:
+      title: EnderecoNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Endereço não encontrado
+          type: string
+          example: Endereço não encontrado
+    EnderecoInvalido:
+      title: EnderecoInvalido
+      type: object
+      properties:
+        message:
+          description: CEP inválido
+          type: string
+          example: O valor do CEP é inválido.
+    ListarBancos:
+      title: ListarBancos
+      type: array
+      items:
+        $ref: "#/components/schemas/Banco"
+      description: ""
+    Banco:
+      title: Banco
+      type: object
+      properties:
+        nome:
+          type: string
+          example: Acesso Soluções De Pagamento S.A.
+        ispb:
+          type: string
+          example: 13140088
+        codigo:
+          type: string
+          example: 332
+        apelido:
+          type: string
+          example: Acesso Solucoes Pagamento Sa
+        razao_social:
+          type: string
+        isSPIDirect:
+          type: boolean
+          example: true
+        produtos:
+          description: Tipos de transferência aceitas
+          type: array
+          items:
+            type: string
+            enum:
+              - "TED"
+              - "PIX"
+          example: [TED, PIX]
+    ListarBancosIndisponivel:
+      title: ListarBancosIndisponivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível obter a lista de bancos.
+    ObterContaPf:
+      title: ObterContaPf
+      required:
+        - banco
+        - numero_banco
+        - agencia
+        - conta
+      type: object
+      properties:
+        banco:
+          description: Nome do banco da conta digital
+          type: string
+          example: Banco do Edson
+        numero_banco:
+          description: Código do banco da conta digital
+          type: string
+          example: "332"
+        agencia:
+          description: Agência da conta digital
+          type: string
+          example: "0001"
+        conta:
+          description: Número da conta digital
+          type: string
+          example: "182125"
+        saldo:
+          description: Saldo da conta digital
+          type: number
+          example: 1009725.75
+        moeda:
+          description: Moeda do saldo da conta digital
+          type: string
+          example: BRL
+    EnviarDocumentoErroS3:
+      title: EnviarDocumentoErroS3
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo do S3
+          type: string
+          example: Erro no armazenamento do S3
+    ContaPfNaoEncontrada:
+      title: ContaPfNaoEncontrada
+      type: object
+      properties:
+        message:
+          description: Conta digital não encontrada
+          type: string
+          example: Conta digital não encontrada.
+    CriarTokenCorpo:
+      title: CriarTokenCorpo
+      required:
+        - cpf
+        - senha
+      type: object
+      properties:
+        cpf:
+          description: CPF cadastrado do cliente
+          type: string
+          example: 99999999999
+          format: cpf
+          minLength: 9
+          maxLength: 9
+        senha:
+          description: Senha de acesso ao sistema
+          type: string
+          example: senhaexemplo1
+    RevogarTokenCorpo:
+      title: RevogarTokenCorpo
+      required:
+        - token
+      type: object
+      properties:
+        token:
+          description: Token de acesso do usuário
+          type: string
+          example: Token
+          format: JWT
+    RenovarTokenCorpo:
+      title: RenovarTokenCorpo
+      type: object
+      properties:
+        grant_type:
+          type: string
+          example: Grant type
+        refresh_token:
+          type: string
+          example: Refresh token
+        sistema_informacao:
+          $ref: "#/components/schemas/SistemaInformacao"
+    CriarTokenErros:
+      title: CriarTokenErros
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message3"
+    RenovarTokenErroInvalido:
+      title: RenovarTokenErroInvalido
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message4"
+    RevogarTokenErroInvalido:
+      title: RevogarTokenErroInvalido
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message5"
+    RenovarTokenSucesso:
+      title: RenovarTokenSucesso
+      type: object
+      properties:
+        token_acesso:
+          $ref: "#/components/schemas/TokenAcesso"
+        token_atualizacao:
+          $ref: "#/components/schemas/TokenAtualizacao"
+    CriarTokenSucesso:
+      title: CriarTokenSucesso
+      required:
+        - token_acesso
+      type: object
+      properties:
+        token_acesso:
+          $ref: "#/components/schemas/TokenAcesso"
+        token_atualizacao:
+          $ref: "#/components/schemas/TokenAtualizacao"
+        cd_usuario:
+          description: ID do usuário no sistema
+          type: string
+          example: 217f0580-cac3-4209-a34e-1cd19f9cdd76
+          format: uuid
+    ErroUsuarioPossuiCartaoVirtual:
+      title: ErroUsuarioPossuiCartaoVirtual
+      type: object
+      properties:
+        message:
+          description: Usuário já possui um cartão virtual
+          type: string
+          example: Usuário já possui um cartão virtual.
+    ErroCartaoVirtualCriar:
+      title: ErroCartaoVirtualCriar
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível criar um cartão virtual.
+    SucessoCriarCartaoVirtual:
+      title: SucessoCriarCartaoVirtual
+      required:
+        - proxy
+      type: object
+      properties:
+        proxy:
+          description: Identificador do cartão
+          type: string
+          example: "22999903520114195"
+    VerificarAptidaoCriarCartao:
+      title: VerificarAptidaoCriarCartao
+      required:
+        - fisico
+        - virtual
+      type: object
+      properties:
+        fisico:
+          description: Booleano para indicar aptidão de criar cartão físico
+          type: boolean
+          example: true
+        virtual:
+          description: Booleano para indicar aptidão de criar cartão virtual
+          type: boolean
+          example: true
+    ErroContaNaoEncontrada:
+      title: ErroContaNaoEncontrada
+      type: object
+      properties:
+        message:
+          description: Conta digital não encontrada
+          type: string
+          example: Conta digital não encontrada.
+    ErroContactlessCartao:
+      title: ErroContactlessCartao
+      type: object
+      properties:
+        message:
+          description: Contactless indisponível para cartões virtuais
+          type: string
+          example: Contactless não está disponível para cartões virtuais.
+    ErroCartaoSenhaInvalida:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message10"
+    ErroCartaoConsulta:
+      title: ErroCartaoConsulta
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível consultar os dados do cartão.
+    ErroCartoesConsulta:
+      title: ErroCartoesConsulta
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível consultar os cartões.
+    GerarCodigo:
+      title: GerarCodigo
+      required:
+        - telefone
+        - imei
+        - mac_address
+        - device_id
+        - modelo
+      type: object
+      properties:
+        telefone:
+          description: Telefone que receberá o código por SMS
+          type: string
+          example: "79999999999"
+          format: DDD 79 Telefone 999999999
+        imei:
+          description: IMEI do dispositivo
+          type: string
+          example: 9142bbf1-bc15-44f5-a3e3-204ef67ff5d4
+          format: uuid ou imei
+        mac_address:
+          description: MAC address do dispositivo
+          type: string
+          example: 70:3A:51:3A:6B:8D
+        device_id:
+          description: Device ID do dispositivo
+          type: string
+          example: 9142bbf1-bc15-44f5-a3e3-204ef67ff5d4
+          format: uuid
+        modelo:
+          description: Modelo do dispositivo
+          type: string
+          example: Samsung M20
+    ReenviarCodigo:
+      title: ReenviarCodigo
+      required:
+        - chave_dispositivo
+      type: object
+      properties:
+        chave_dispositivo:
+          description: Chave do dispositivo associado ao IMEI
+          type: string
+          example: 267a7206054785890bb758e15a6b3d1d
+    ConfirmarCodigo:
+      title: ConfirmarCodigo
+      required:
+        - id_codigo
+        - codigo_confirmacao
+        - chave_dispositivo
+      type: object
+      properties:
+        codigo_confirmacao:
+          description: Código de confirmação enviado por SMS
+          type: string
+          example: MdiHRK
+          minLength: 6
+          maxLength: 6
+        id_codigo:
+          description: ID do código de confirmação não encontrado
+          type: string
+          example: 1a99f6ab-f862-44bd-8e0c-ff3c7f10596b
+          format: uuid
+        chave_dispositivo:
+          description: Chave do dispositivo associado ao IMEI
+          type: string
+          example: 267a7206054785890bb758e15a6b3d1d
+    GerarCodigoErroNaoFoiPossivel:
+      title: GerarCodigoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message6"
+    ConfirmarCodigoErroNaoEncontrado:
+      title: ConfirmarCodigoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: ID do código de confirmação não encontrado
+          type: string
+          example: Código de confirmação não encontrado.
+    ConfirmarCodigoErroNaoFoiPossivel:
+      title: ConfirmarCodigoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message7"
+    ReenviarCodigoErroChaveInvalida:
+      title: ReenviarCodigoErroChaveInvalida
+      type: object
+      properties:
+        message:
+          description: Chave do dispositivo inválida
+          type: string
+          example: Chave do dispositivo inválida.
+    GerarCodigoErroEnvio:
+      title: GerarCodigoErroEnvio
+      type: object
+      properties:
+        message:
+          description: Erro no servidor de envio do SMS
+          type: string
+          example: Não foi possível enviar um SMS para o número informado.
+    GerarCodigoErro2:
+      title: GerarCodigoErro2
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ocorreu um erro ao enviar o sms.
+    CodigoConfirmar:
+      title: CodigoConfirmar
+      required:
+        - id_codigo
+        - confirmado
+        - tentativas_restantes
+      type: object
+      properties:
+        id_codigo:
+          description: ID do código de confirmação gerado
+          type: string
+          example: 1a99f6ab-f862-44bd-8e0c-ff3c7f10596b
+          format: uuid
+        confirmado:
+          description: Booleano indicando se o código está correto
+          type: boolean
+          example: true
+        tentativas_restantes:
+          description: Quantidade de tentativas de confirmação restantes
+          type: integer
+          format: int32
+          example: 5
+    CodigoReenvio:
+      title: CodigoReenvio
+      required:
+        - id_codigo
+        - chave_dispositivo
+        - tempo_expiracao
+      type: object
+      properties:
+        id_codigo:
+          description: ID do código de confirmação gerado
+          type: string
+          example: 1a99f6ab-f862-44bd-8e0c-ff3c7f10596b
+        chave_dispositivo:
+          description: Chave do dispositivo associado ao IMEI
+          type: string
+          example: 267a7206054785890bb758e15a6b3d1d
+        tempo_expiracao:
+          description: Tempo para expiração do código de confirmação
+          type: integer
+          format: int32
+          example: 90
+    Codigo:
+      title: Codigo
+      required:
+        - id_codigo
+        - chave_dispositivo
+        - tempo_expiracao
+        - tentativas_restantes
+      type: object
+      properties:
+        id_codigo:
+          description: ID do código de confirmação gerado
+          type: string
+          example: 1a99f6ab-f862-44bd-8e0c-ff3c7f10596b
+        chave_dispositivo:
+          description: Chave do dispositivo associado ao IMEI
+          type: string
+          example: 267a7206054785890bb758e15a6b3d1d
+        tempo_expiracao:
+          description: Tempo para expiração do código de confirmação
+          type: integer
+          format: int32
+          example: 90
+        tentativas_restantes:
+          description: Quantidade de tentativas restantes para confirmar o código
+          type: integer
+          format: int32
+          example: 5
+    VincularDispositivo:
+      title: VincularDispositivo
+      required:
+        - cd_usuario
+        - chave_dispositivo
+      type: object
+      properties:
+        cd_usuario:
+          description: ID do usuário para vincular o dispositivo
+          type: string
+          example: 74032116-0fb5-4d2c-b544-ec9bea919e6b
+        chave_dispositivo:
+          description: Chave do dispositivo para vincular
+          type: string
+          example: 75396ef7-ffc6-42c3-912a-cfb448617521
+    VincularDispositivoOk:
+      title: VincularDispositivoOk
+      required:
+        - cd_usuario
+        - chave_dispositivo
+      type: object
+      properties:
+        cd_usuario:
+          description: ID do usuário vinculado ao dispositivo
+          type: string
+          example: 74032116-0fb5-4d2c-b544-ec9bea919e6b
+        chave_dispositivo:
+          description: Chave do dispositivo vinculado
+          type: string
+          example: 75396ef7-ffc6-42c3-912a-cfb448617521
+    DispositivoErroVinculoExistente:
+      title: DispositivoErroVinculoExistente
+      type: object
+      properties:
+        message:
+          description: Vinculo de usuário ao dispositivo existe
+          type: string
+          example: Vinculo já existe.
+    DesvincularDispositivoErroNaoEncontrado:
+      title: DesvincularDispositivoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message8"
+    DispositivoErroEncontrado:
+      title: DispositivoErroEncontrado
+      type: object
+      properties:
+        message:
+          type: string
+          example: Dispositivo ou usuário não encontrado.
+    DispositivoErroNaoEncontrado:
+      title: DispositivoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/Message9"
+    DispositivoErroVinculo:
+      title: DispositivoErroVinculo
+      type: object
+      properties:
+        message:
+          type: string
+          example: Nenhum vínculo encontrado.
+    ValidarBoletoCorpo:
+      title: ValidarBoletoCorpo
+      required:
+        - linha_digitavel
+      type: object
+      properties:
+        linha_digitavel:
+          description: Linha digitável que identifica o boleto
+          type: string
+          example: "12312312124124125125125126126126126126126261261"
+    ValidarBoleto:
+      title: ValidarBoleto
+      required:
+        - valor
+      type: object
+      properties:
+        identificador:
+          description: Identificador do boleto
+          type: string
+          example: f947c084-1f2d-4192-bc2b-f328f3471844
+        emissor:
+          description: Emissor do boleto
+          type: string
+          example: Estabelecimento 1
+        beneficiario:
+          description: Beneficiário do boleto
+          type: object
+          properties:
+            nome:
+              type: string
+              example: Fulano
+            numero_documento:
+              type: string
+              example: "99999999999"
+        pagador:
+          description: Pagador do boleto
+          type: object
+          properties:
+            nome:
+              type: string
+              example: Fulano
+            numero_documento:
+              type: string
+              example: "99999999999"
+        horario_pagamento:
+          description: Horário de pagamento do boleto
+          type: object
+          properties:
+            inicio:
+              type: string
+              example: 05:00
+            fim:
+              type: string
+              example: 07:00
+        data_vencimento:
+          description: Data de vencimento do boleto
+          type: string
+          example: 2021-04-15T00:00:00
+        data_efetivacao:
+          description: Data que o pagamento foi efetuado
+          type: string
+          example: 2021-04-15T00:00:00
+        avanca_vencimento:
+          description: Avança vencimento do boleto
+          type: boolean
+          example: true
+        valor_original:
+          description: Valor original do boleto
+          type: number
+          example: 390.0
+        valor:
+          description: Valor do boleto com taxas
+          type: number
+          example: 390.0
+        tarifas:
+          description: Tarifas sobre o boleto
+          type: object
+          properties:
+            juros:
+              type: number
+              example: 0.0
+            multa:
+              type: number
+              example: 0.0
+            desconto:
+              type: number
+              example: 0.0
+        valor_maximo:
+          description: Valor máximo que pode ser pago
+          type: number
+          example: 390.0
+        valor_minimo:
+          description: Valor minímo que pode ser pago
+          type: number
+          example: 390.0
+        permite_alteracao_valor:
+          description: Permite alteração no valor a ser pago
+          type: boolean
+          example: false
+        linha_digitavel:
+          description: Linha digitável que identifica o boleto
+          type: string
+          example: "12312312124124125125125126126126126126126261261"
+    ValidarBoletoErroNaoFoiPossivel:
+      title: ValidarBoletoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível validar o boleto.
+    ValidarBoletoErroNaoEncontrado:
+      title: ValidarBoletoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Código de barras não encontrado
+          type: string
+          example: Código de barras não encontrado.
+    PagarBoletoCorpo:
+      title: PagarBoleto
+      type: object
+      required:
+        - linha_digitavel
+        - valor
+      properties:
+        linha_digitavel:
+          description: Linha digitável do boleto
+          type: string
+          example: "04793203190073070080456569047758386470000008000"
+        valor:
+          description: Valor do pagamento
+          type: integer
+          example: 8000
+        descricao:
+          description: Uma descrição opcional para o pagamento
+          type: string
+          example: "Pagamento da parcela do seguro."
+    PagarBoletoRetorno:
+      title: Retorno do pagamento do boleto
+      type: object
+      properties:
+        codigo_autenticacao:
+          description: Código de autenticação
+          type: string
+          example: "1096029f-efa3-4db4-9e4d-1cf1a200773b"
+        data_pagamento:
+          description: Data do pagamento
+          type: string
+          example: "2021-05-11 00:00:00"
+    PagarBoletoNaoAutorizado:
+      title: PagarBoletoNaoAutorizado
+      type: object
+      properties:
+        message:
+          description: Pagamento do boleto não autorizado.
+          type: string
+          example: Pagamento do boleto não autorizado.
+    PagarBoletoErroVencido:
+      title: PagarBoletoErroVencido
+      type: object
+      properties:
+        message:
+          description: Boleto está vencido.
+          type: string
+          example: Boleto está vencido.
+    PagarBoletoErroHorario:
+      title: PagarBoletoErroHorario
+      type: object
+      properties:
+        message:
+          description: Boleto não pode ser pago nesse horário.
+          type: string
+          example: Boleto não pode ser pago nesse horário.
+    PagarBoletoErroValorIgual:
+      title: PagarBoletoErroIgual
+      type: object
+      properties:
+        message:
+          description: O valor do pagamento precisar ser igual ao do boleto
+          type: string
+          example: O valor do pagamento precisar ser igual ao do boleto
+    PagarBoletoErroValorMinimoMaximo:
+      title: PagarBoletoValorMinimoMaximo
+      type: object
+      properties:
+        message:
+          description: Valor de pagamento precisa estar entre o mínimo e o máximo.
+          type: string
+          example: Valor de pagamento precisa estar entre o mínimo e o máximo.
+    PagarBoletoErroNaoFoiPossivel:
+      title: PagarBoletoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Não foi possível pagar o boleto.
+          type: string
+          example: Não foi possível pagar o boleto.
+    ComprovanteBoletoRetorno:
+      title: ComprovanteBoletoRetorno
+      type: object
+      properties:
+        data_pagamento:
+          type: string
+          example: "2021-05-11T14:26:38.905+00:00"
+        identificador:
+          type: string
+          example: "1096029f-efa3-4db4-9e4d-1cf1a200773b"
+        status:
+          type: string
+          example: "Completed"
+        data_confirmacao:
+          type: string
+          example: "2021-05-11T14:26:41.831+00:00"
+        digitavel:
+          type: string
+          example: "04793203190073070080456569047758386470000008000"
+        valor:
+          type: integer
+          example: 8000
+        valor_original:
+          type: integer
+          example: 8000
+        pagador:
+          type: object
+          properties:
+            banco:
+              type: string
+              example: "0001"
+            conta:
+              type: string
+              example: "182125"
+            numero_documento:
+              type: string
+              example: "03282512000186"
+        destinatario:
+          type: object
+          properties:
+            emissor:
+              type: string
+              example: "BANCO DO ESTADO DE SERGIPE S.A."
+            numero_documento:
+              type: string
+              example: "03282512000186"
+            nome:
+              type: string
+              example: "UAUBR - PROVEDOR DE ACESSO A INTERNET LTDA - ME"
+        vencimento_final:
+          type: string
+          example: "2021-05-11T00:00:00+00:00"
+        vencimento_inicial:
+          type: string
+          example: "2021-06-10T00:00:00+00:00"
+        taxas:
+          type: object
+          properties:
+            juros:
+              type: integer
+              example: 0
+            multa:
+              type: integer
+              example: 0
+            desconto:
+              type: integer
+              example: 0
+    ComprovanteBoletoErroNaoFoiPossivel:
+      title: ComprovanteBoletoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Não foi possível obter o comprovante de pagamento do boleto.
+          type: string
+          example: Não foi possível obter o comprovante de pagamento do boleto.
+    ComprovantePagamentoNaoEncontrado:
+      title: ComprovantePagamentoNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Comprovante de pagamento não encontrado.
+          type: string
+          example: Comprovante de pagamento não encontrado.
+    ErroS3:
+      title: ErroS3
+      type: object
+      properties:
+        message:
+          type: string
+          example: Erro no armazenamento do S3
+    ContaNaoEncontrada:
+      title: ContaNaoEncontrada
+      type: object
+      properties:
+        message:
+          description: Conta digital não encontrada
+          type: string
+          example: Conta digital não encontrada.
+    ContaPfNaoEncontrado:
+      title: ContaPfNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Conta digital não encontrada
+          type: string
+          example: Conta digital não encontrada.
+    ObterHistoricoSaldoContaPf:
+      title: ObterHistoricoSaldoContaPf
+      type: object
+      properties:
+        historico:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoricoSaldoContaPfModel"
+          description: Histórico de pontos mensal do saldo do cliente
+          example:
+            - ano: 2021
+              mes: 1
+              valor: 1009725.75
+            - ano: 2021
+              mes: 2
+              valor: 1009725.75
+    HistoricoSaldoContaPfModel:
+      title: HistoricoSaldoContaPfModel
+      required:
+        - ano
+        - mes
+        - valor
+      type: object
+      properties:
+        ano:
+          description: Ano do registro
+          type: number
+          example: 2021
+        mes:
+          description: Mês do registro
+          type: number
+          example: 2
+        valor:
+          description: Valor do saldo no registro
+          type: number
+          example: 1009725
+    HistoricoSaldoContaPfNaoEncontrado:
+      title: HistoricoSaldoContaPfNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Conta digital não encontrada
+          type: string
+          example: Conta digital não encontrada.
+    ObterStatusContaPf:
+      title: ObterStatusContaPf
+      type: object
+      properties:
+        status:
+          type: string
+          example: Ativo
+    EmitirBoleto:
+      title: EmitirBoleto
+      required:
+        - codigo_autenticacao
+      type: object
+      properties:
+        codigo_autenticacao:
+          description: Código que identifica o boleto para dados e impressão
+          type: string
+          example: f947c084-1f2d-4192-bc2b-f328f3471844
+    EmitirBoletoBody:
+      title: EmitirBoletoBody
+      required:
+        - valor
+      type: object
+      properties:
+        valor:
+          description: Valor que será depositado na conta digital PF
+          type: number
+          example: 10
+          minimum: 1
+          maximum: 15000
+    ErroEmissaoBoleto:
+      title: ErroEmissaoBoleto
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível emitir o boleto.
+    DadosBoleto:
+      title: DadosBoleto
+      required:
+        - linha_digitavel
+        - valor
+        - vencimento
+      type: object
+      properties:
+        linha_digitavel:
+          description: Linha digitável equivalente ao código de barras do boleto
+          type: string
+          example: "33290001151676279412746001831562187490001000000"
+        valor:
+          description: Valor do boleto a ser depositado na conta digital
+          type: number
+          example: 10000
+        vencimento:
+          description: Data de vencimento do boleto
+          type: string
+          example: 2021-09-20
+    ErroConsultaDadosBoleto:
+      title: ErroConsultaDadosBoleto
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível consultar o boleto.
+    DocumentoBody:
+      title: DocumentoBody
+      required:
+        - documento
+        - tipo_documento
+      type: object
+      properties:
+        tipo_documento:
+          $ref: "#/components/schemas/TipoDocumento"
+        documento:
+          description: Bytes da foto em base64
+          type: string
+          example: iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAMAAAAKE/YAAAAAmVBMVEX///81NTgAer7b29vOzs9CQkW1tbdpaWtdXV/z8/NPT1L6+vqqqqucnJ/CwsMAfL/n5+c9PUB3d3kAgMG+vr/39/e4uLrq6uqioqVXV1uWlpeNjY8AiMR9fX/W1taFhYegyOUAhcPp8vjb6/WlpaY+mM3h7vaTwODE3e5HR0uqzuh8tdpFm8631upxsdljqdUjkMiWw+LP4/FTOcfoAAAHU0lEQVR4nO2ZaXuquhaAY4nMIKCIQp3a2mrt4O3//3E3WRkMCB1sz8YP6332czZkB3hZWVkJHkIQBEEQBEEQBEEQBEEQBEEQBEEQBEEQBEEQBEEQBEGQb7E7bG/HN8BofHt8fw76NvqCu8Px5pzxy3PfYt2sb1uMJdvXvu3aCA7jbmWI9+Hq8uQrZUjxt6vSfm0o8xl4PG7OXmS87ttUE7yYYse311NA79bv9UQ/XkmwP4yAHtctUq/b0WkM7v69YAsHbTR67zTSheU6isjLSTkXLfeH7WY8uhnxxH7bqX4fUMHf+tI0CfRicnyEhvuX5uw7PsmM+bi9Ofaoqsn1LHuC89fW5WX0ci+6r68hofON1NqA1X3bGi7Dfd+3qyJQcd1CAryNOp0Z71dS67bKh5/c1TKDTcLbxtoyvo5gPwpPqAi7k+Foq3P34+30KuNrSGjOO5M58INnnRqbp3qXuzf5OtdRoTnPI4jzsw7n/1o6PY1VDl0JML20s5iR7FNgM4LEPh6gegfvN7d9Sraxk7kxgjC/1gvfBtaWj8eeHc+Qk23El+yP8+WlNWV6R6zlUNIOrbV6eyU1us6BxZk7b9uUWYr07dfObrMzVkiYhHynJ7mOZaUdPQPHb3LLJ2r0ul+tT3lXQTYn3np889Kb0TeQn1239eU6ONv3W/E0tv6Z1VcEfB424mp54u+JDyxI6A84wxX994LtPI229QbPT2dQ72xQHbjZQONcS7ibdaLicgXR0jXSaR+KbUwqYyWhIOcX7dKDgd2fpwlNB3M97MFcuM3zDunBVSS2x6dZOpNnkXJbdEn7ea+6glLOsQTOpq6OqCk9d4f6OPrWbfMlVWVI4VnUam5pWNuy0a31ZjFNzKtSobJXwx6qSqGl04jflqrXGX6+lxoy3GQBt3VnWigP4fph5WW8B+RjYDtwxyxZ8DYa8v9mor/Fj31xKG7mz/QYP0gxfpfd+oOcJmCpnOXr5I5siD+Vhkv0uOwnopX6Or3giD9uOVdtQ2ijEC9HSkM7P9IZO/CX8hnS5AGWb7YHYd+FsjCrx6h0J4UclOpLaRO4fJI2Wpl03Gxrl14ZPVJhHYgrhzlZ6++CZe1W6WniyeuzH0kPWKyXTT8mbZ21tUrLTBiK3ntIt0S0LQhRPyiwT0PfvJV78rHPWrqlh6uoksu/J+soa1rttbSYIvsqLNXj2qTF6GYWCaZw6Yr/m4xqSXZ6X61TRuBcJJ3xkARiWkRTERjelMvRsuJTm+zWKl1qU5KAdWFK68/zm7s/kHZlheF7goGfmfcRM8ZaQJvstuqU5mPkFx4Ajw+JTo+MPBqRVmN4ubSqn6KgpiIhBOKJ1r7WrUvaGzRZEHMi6p8mGxPxImldyvWg+boDJPhSBFLhdkhbZ9KOcdcZuRffh+O7Rsm7RDrVZ3pfO28I1l/E6ZCux08/XC6ArAI+bkej8Uuul0S1vl8S6aIWVniAqpwBLDyi4On18nxxEUMBuTSzDGA1V8v4UK1zMzUO9i+kS3kCAU1BSe1pRSmxXDG+AlFKKPy1D07PmhNutzh/iF4ls0niWaEODf2NtJxiBehmUEPEdoPtKYQ0PFbuEEQxG1AxR+FNYO/JdCG95Bw29jx5bSnRrMivpNMyIZ5dk0lnBSke5K7EEqtGGhXEC/fqRUXEVtSyhdREjIEPOWHvja38+RrLxfLfSRtkevtrYOk0PEGbW/h5IKdtWk0e+IHx2XS2c2HdT59bv5X22WwLnGarZRSWk3S9DbZHydBsMvbyy2aGOB75K2kXConXNGTS+eJc2jPeLhWlYWlY++avAV5lXjwMTcVLpP2JTNNhpGaPrQKzcKW02eZIaRJEatj1zxWJeuG0anzjJHqv5Ybyn2IXWJ06yZaWEtSUZrNr4WTV1HhKQKvMcaolmYQM+Q+0ZN3KpUgLWXHCzJ07lfn9bJXO3F2EBTknie3Qpl9/sH2BkP4hzkm6Fy6ShmxKvu73X3GJNFTj9Bf/86Hj59FZ8s1A/EC6kF+9hVz+WsmDhBdNtlaxDA48dhR4HjsNuI9XkCBPAhKySlN4cA439PhlAYny3MsL0fBH0pbPv6P0l3pHSseZHU2TarqKvNV0VfGjMqrsajWtghmb0tSZVl4ZksieTeIHm98lsqNJnE2rPKK0rOyIlPbD5z/nfVuaQgH2HVm2umpSzIajZJUziVj5CCp25FUR24taJKaZbWdxTKxJbBWsTpc04s4JEyxjSpaUS7MksRas359IN3YP864BjKeGdC6lWY1PCI3LJLEoZZZSmuTxTEmz7/2YSbOu4ZLl9uc/Un870pHp7LYVYSGdhdGEJUXF06OS6SGkKaQHl6a2Sg++MJY8PQxpr2TF/G+kCdXb4EHV/asmC2KuJ2ISiolI+FkekIIFP+cnhZhshagWCZ+IbIp67A90LTpj8lNpEsQLltCpW35WmIxqRqPoGn6yRRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAEQRAE6Yf/A2i3bVFEJXJHAAAAAElFTkSuQmCC
+    Dado:
+      title: Dado
+      required:
+        - valor
+        - descricao
+        - data_hora
+      type: object
+      properties:
+        valor:
+          description: Valor da transação
+          type: number
+          example: 15.33
+        descricao:
+          description: Descrição sobre a transação
+          type: string
+          example: Atacadão
+        data_hora:
+          description: Data/Hora da transação
+          type: string
+          example: 2020-07-20T22:55:12
+    Message:
+      title: Message
+      description: Campo contendo uma descrição do erro ocorrido
+      enum:
+        - Conta não encontrada
+        - Email não é válido
+      type: string
+    Message1:
+      title: Message1
+      description: Campo contendo uma descrição do erro ocorrido
+      enum:
+        - Email não é válido
+        - Idade do usuário é menor que 16 anos
+        - Conta não pode ser solicitada novamente
+        - Conta não encontrada
+      type: string
+    Message2:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message2
+      enum:
+        - Só é permitido alterar a senha de cartões com status Ativo ou Bloqueio temporário.
+        - Usuário não possui esse cartão.
+      type: string
+    Message3:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message3
+      enum:
+        - Dados inválidos
+        - Grant type inválido.
+        - O Usuário não possui conta ativa para este sistema.
+        - Ocorreu um erro inesperado.
+      type: string
+    Message4:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message4
+      enum:
+        - Token inválido.
+        - Usuário inválido.
+        - Ocorreu um erro inesperado.
+      type: string
+    Message5:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message5
+      enum:
+        - Token inválido.
+        - Usuário inválido.
+        - O Usuário não possui conta ativa para este sistema.
+        - Ocorreu um erro inesperado.
+      type: string
+    Message6:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message6
+      enum:
+        - Por alterações do número do celular, seu dispositivo foi bloqueado. A liberação será às 00:01.
+        - Este dispositivo possui um código ativo. Aguarde o código expirar para solicitar um novo.
+      type: string
+    Message7:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message7
+      enum:
+        - Por alterações do número do celular, seu dispositivo foi bloqueado. A liberação será às 00:01.
+        - Você atingiu a quantidade máxima de tentativas para informar o código de confirmação. Aguarde o tempo de expiração para solicitar um novo código.
+      type: string
+    Message8:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message8
+      enum:
+        - Nenhum vínculo encontrado.
+        - Dispositivo ou usuário não encontrado.
+      type: string
+    Message9:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message9
+      enum:
+        - Dispositivo ou usuário não encontrado.
+        - Não existe dispositivo com código de confirmação válido.
+      type: string
+    Message10:
+      description: Campo contendo uma descrição do erro ocorrido
+      title: Message9
+      enum:
+        - Senha inválida.
+        - Usuário não possui esse cartão.
+        - Cartão não está ativo ou bloqueado temporariamente.
+      type: string
+    Meta:
+      title: Meta
+      required:
+        - pagina
+        - ultima_pagina
+      type: object
+      properties:
+        pagina:
+          description: ID da página atual
+          type: string
+          example: mkzjfhcnnhat84y583hguim49801
+        ultima_pagina:
+          description: Booleano indicando se é a última página
+          type: boolean
+          example: true
+    SistemaInformacao:
+      title: SistemaInformacao
+      type: object
+      properties:
+        id_origem:
+          type: string
+          example: ea8295fd-2bdc-452f-84f1-760f86c04aa1
+        id_sistema:
+          type: string
+          example: ea8295fd-2bdc-452f-84f1-760f86c04aa1
+    Status:
+      title: Status
+      enum:
+        - Cancelado
+        - Bloqueado
+        - Confeccionando
+        - Entrega não efetuada
+        - Enviado
+        - Ativo
+        - Bloqueado por pendência
+        - Bloqueado por senha
+        - Bloqueio temporário
+      type: string
+    Tipo:
+      title: Tipo
+      enum:
+        - Físico
+        - Virtual
+      type: string
+    TipoDocumento:
+      title: TipoDocumento
+      description: Tipo do documento enviado na foto
+      enum:
+        - SELFIE
+        - RG_FRENTE
+        - RG_VERSO
+        - CNH_FRENTE
+        - CNH_VERSO
+      type: string
+    TokenAcesso:
+      title: TokenAcesso
+      required:
+        - token
+        - expiracao
+      type: object
+      properties:
+        token:
+          description: Token de acesso do usuário
+          type: string
+          example: Token de acesso
+          format: JWT
+        expiracao:
+          description: Data de expiração do token de acesso
+          type: string
+          example: 2021-03-25 23:51:03.664376+00:00
+    TokenAtualizacao:
+      title: TokenAtualizacao
+      required:
+        - token
+        - expiracao
+        - quantidade_refresh
+      type: object
+      properties:
+        token:
+          description: Token de refresh do usuário
+          type: string
+          example: Token de acesso
+          format: JWT
+        expiracao:
+          description: Data de expiração do token de refresh
+          type: string
+          example: 2021-03-25 23:51:03.664376+00:00
+        quantidade_refresh:
+          description: Quantidade restante de renovações do token de acesso
+          type: integer
+          format: int32
+          example: 5
+
+  securitySchemes:
+    JWT:
+      description: "Token gerado no login do usuário, podendo ser solicitado
+        um novo. O processo de solicitação de um novo inutiliza qualquer token anterior.\n
+
+        Uso: `Authorization: <JWT>`"
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+tags:
+  - name: Login/Logout
+    description: Rotas para autenticação do usuário no sistema
+  - name: Dispositivo
+    description: Rotas para operações no dispositivo do usuário
+  - name: Termos/Contratos
+    description: Rotas para obtenção de Termos/Contratos mais recentes do negócio
+  - name: Pessoa Física
+    description: Rotas para operações nos clientes da carteira de cartões
+  - name: Conta PF
+    description: Rotas para operações nos clientes da carteira de cartões solicitando conta digital PF
+  - name: Serviços Auxiliares
+    description: Rotas para obtenção de informações auxiliares do cliente
+  - name: Conta Digital PF
+    description: Rotas para operações nos clientes da conta digital PF
+  - name: Boleto Depósito
+    description: Rotas para operações nos boletos de depósito para clientes da conta digital PF
+  - name: Cartões
+    description: Rotas para operações nos cartões dos clientes da conta digital PF
+  - name: Pagamentos
+    description: Rotas para operações de pagamentos de boletos dos clientes da conta digital PF
+  - name: Transferências
+    description: Rotas para operações de transferências dos clientes da conta digital PF
+
+x-tagGroups:
+  - name: Autenticador
+    description: Serviço de Autenticação do usuário no sistema ma9
+    tags:
+      - Login/Logout
+  - name: Autorizador
+    description: Serviço de Autorização do usuário no sistema pagueON
+    tags:
+      - Dispositivo
+  - name: Gestor
+    description: Serviço de Gestor para clientes da carteira de cartões
+    tags:
+      - Termos/Contratos
+      - Pessoa Física
+      - Conta PF
+  - name: Conta Digital
+    description: Serviço de Conta Digital para clientes de conta PF/PJ
+    tags:
+      - Conta Digital PF
+      - Boleto Depósito
+      - Cartões
+      - Pagamentos
+      - Transferências
+      - Serviços Auxiliares
