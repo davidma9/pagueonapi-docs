@@ -95,12 +95,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
         "409":
-          description: Não foi possível cadastrar
+          description: Conflito
           headers: {}
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CadastroComplementarErroNaoFoiPossivel"
+                $ref: "#/components/schemas/CadastroComplementarErroConflito"
         "412":
           description: Erro genérico
           headers: {}
@@ -231,6 +231,59 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErroValidacao"
       deprecated: false
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Pessoa Física
+      summary: Atualizar informações do usuário
+      description: Atualizar informações do usuário
+      operationId: Atualizarinformacoesdousuario
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtualizarPessoaFisica"
+        required: true
+      responses:
+        "200":
+          description: sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtualizarPessoaFisicaRetorno"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "503":
+          description: Serviço Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtualizarPessoaFisicaNaoFoiPossivel"
+
   /gestor/v1/pessoafisica/{cd_usuario}/senha/validar:
     post:
       security:
@@ -271,6 +324,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SenhaFinanceiraInvalida"
+        "404":
+          description: Cliente não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /gestor/v1/pessoafisica/{cd_usuario}/enderecos:
+    post:
+      security:
+        - JWT: []
+      tags:
+        - Pessoa Física
+      summary: Listar endereços de uma pessoa física
+      description: Listar endereços de uma pessoa física
+      operationId: ListarEnderecosPessoaFisica
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListarEnderecosPessoaFisica"
         "404":
           description: Cliente não encontrado
           headers: {}
@@ -544,6 +645,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerificarEmail"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
+  /gestor/v1/pessoafisica/verificar-telefone:
+    post:
+      tags:
+        - Pessoa Física
+      summary: Verificar validade de telefone
+      description: Verificar validade de telefone
+      operationId: Verificarvalidadedetelefone
+      parameters: []
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Telefone"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarTelefone"
         "422":
           description: Erro semântico ou de validação
           headers: {}
@@ -2054,7 +2193,6 @@ paths:
           in: query
           description: "Flag booleana para alternar comportamento do contactless"
           required: true
-          style: simple
           schema:
             type: boolean
       responses:
@@ -2595,12 +2733,13 @@ components:
       properties:
         message:
           $ref: "#/components/schemas/Message"
-    CadastroComplementarErroNaoFoiPossivel:
-      title: CadastroComplementarErroNaoFoiPossivel
+    CadastroComplementarErroConflito:
+      title: CadastroComplementarErroConflito
       type: object
       properties:
         message:
           $ref: "#/components/schemas/Message1"
+          example: O email não foi verificado.
     ReenvioDadosCorpo:
       title: ReenvioDadosCorpo
       required:
@@ -2708,6 +2847,9 @@ components:
           description: Foto cadastrada para o cliente
           type: string
           example: Bytes da foto em b64
+        email_confirmado:
+          type: boolean
+          example: True
     ValidarSenhaCorpo:
       title: ValidarSenhaCorpo
       type: object
@@ -2725,7 +2867,6 @@ components:
         - nome_preferencia
         - nome_completo
         - nome_mae
-        - email
         - cep
         - logradouro
         - numero
@@ -2750,10 +2891,6 @@ components:
           type: string
           description: Nome social do cliente caso existente. [Saiba mais](https://www.mds.gov.br/webarquivos/publicacao/assistencia_social/Folders/cartilha_nome_social.pdf)
           example: Robertinha da Silva
-        email:
-          description: Email do cliente cadastrado
-          type: string
-          example: abc@gmail.com
         cep:
           description: CEP do endereço do cliente
           type: string
@@ -3071,6 +3208,7 @@ components:
         - device_id
         - senha_cadastro
         - senha_movimentacao
+        - email
       type: object
       properties:
         cpf:
@@ -3103,6 +3241,9 @@ components:
         senha_movimentacao:
           type: string
           example: "999999"
+        email:
+          type: string
+          example: "numeroseletras@gmail.com"
     CadastroInicialPf:
       title: CadastroInicialPf
       required:
@@ -3183,6 +3324,16 @@ components:
           description: Link para download do documento em formato PDF
           type: string
           example: URL de um link da AWS
+    VerificarTelefone:
+      title: VerificarTelefone
+      required:
+        - valido
+      type: object
+      properties:
+        valido:
+          description: O telefone é válido para o cliente
+          type: boolean
+          example: true
     VerificarEmail:
       title: VerificarEmail
       required:
@@ -3211,6 +3362,26 @@ components:
           description: Email para verificar validade
           type: string
           example: abcde@gmail.com
+    Telefone:
+      title: Telefone
+      required:
+        - cpf
+        - telefone
+      type: object
+      properties:
+        cpf:
+          description: CPF cadastrado do cliente
+          type: string
+          example: "00000000000"
+          format: cpf
+          minLength: 9
+          maxLength: 9
+        telefone:
+          description: Telefone para verificar validade
+          type: string
+          example: "00000000000"
+          minLength: 11
+          maxLength: 11
     VerificarAbertura:
       title: VerificarAbertura
       type: object
@@ -3465,6 +3636,39 @@ components:
             - Senha inválida.
             - Sem permissão.
           example: Senha inválida.
+    ListarEnderecosPessoaFisica:
+      title: ListarEnderecosPessoaFisica
+      type: array
+      items:
+        $ref: "#/components/schemas/EnderecoPessoaFisica"
+    EnderecoPessoaFisica:
+      title: EnderecoPessoaFisica
+      type: object
+      properties:
+        cep:
+          type: string
+          example: Rua A
+        logradouro:
+          type: string
+          example: 00000000
+        numero:
+          type: string
+          example: 111
+        bairro:
+          type: string
+          example: Bairro1
+        complemento:
+          type: string
+          example: Próximo ao supermercado
+        municipio:
+          type: string
+          example: Aracaju
+        uf:
+          type: string
+          example: SE
+        apelido:
+          type: string
+          example: casa
     VerificarPessoaFisicaErroNaoEncontrado:
       title: VerificarPessoaFisicaErroNaoEncontrado
       type: object
@@ -3530,6 +3734,32 @@ components:
           type: string
           description: Modelo do último dispositivo vinculado ao cliente
           example: Samsung M20
+    AtualizarPessoaFisica:
+      title: AtualizarPessoaFisica
+      type: object
+      properties:
+        email:
+          type: string
+          description: email da pessoa física
+          example: "numeroseletras@gmail.com"
+
+    AtualizarPessoaFisicaRetorno:
+      title: AtualizarPessoaFisicaRetorno
+      type: object
+      properties:
+        atualizado:
+          type: boolean
+          description: retorno da atualização da pessoa física
+          example: true
+    AtualizarPessoaFisicaNaoFoiPossivel:
+      title: AtualizarPessoaFisicaRetorno
+      type: object
+      properties:
+        message:
+          type: string
+          description: Não foi possível atualizar os dados da pessoa física
+          example: true
+
     Cartoes:
       title: Cartoes
       required:
@@ -4595,6 +4825,7 @@ components:
         - Idade do usuário é menor que 16 anos
         - Conta não pode ser solicitada novamente
         - Conta não encontrada
+        - O email não foi verificado.
       type: string
     Message2:
       description: Campo contendo uma descrição do erro ocorrido
@@ -4619,6 +4850,7 @@ components:
         - Token inválido.
         - Usuário inválido.
         - Ocorreu um erro inesperado.
+        - Usuário está temporariamente bloqueado
       type: string
     Message5:
       description: Campo contendo uma descrição do erro ocorrido
