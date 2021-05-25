@@ -3701,6 +3701,9 @@ components:
       title: EnderecoPessoaFisica
       type: object
       properties:
+        cd_endereco:
+          type: string
+          example: 8aac07cc-9a52-483d-bbbd-a0e6739fadd3
         cep:
           type: string
           example: Rua A
