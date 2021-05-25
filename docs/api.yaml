@@ -347,7 +347,7 @@ paths:
                 $ref: "#/components/schemas/ErroValidacao"
       deprecated: false
   /gestor/v1/pessoafisica/{cd_usuario}/enderecos:
-    post:
+    get:
       security:
         - JWT: []
       tags:
@@ -372,6 +372,62 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListarEnderecosPessoaFisica"
+        "404":
+          description: Cliente não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+      deprecated: false
+  /gestor/v1/pessoafisica/{cd_usuario}/enderecos/{cd_endereco}:
+    get:
+      security:
+        - JWT: []
+      tags:
+        - Pessoa Física
+      summary: Obter endereço de uma pessoa física
+      description: Obter endereço de uma pessoa física
+      operationId: ObterEnderecosPessoaFisica
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: cd_endereco
+          in: path
+          description: "Identificador do endereço do usuário"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnderecoPessoaFisica"
         "404":
           description: Cliente não encontrado
           headers: {}
@@ -3747,7 +3803,7 @@ components:
       title: AtualizarPessoaFisicaRetorno
       type: object
       properties:
-        atualizado:
+        alterado:
           type: boolean
           description: retorno da atualização da pessoa física
           example: true
