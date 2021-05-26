@@ -94,13 +94,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerificarPessoaFisicaErroNaoEncontrado"
+        "403":
+          description: Proibido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificarAberturaErroProibido"
         "409":
           description: Conflito
           headers: {}
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CadastroComplementarErroConflito"
+                oneOf:
+                  - $ref: "#/components/schemas/CadastroComplementarErroConflito"
+                  - $ref: "#/components/schemas/VerificarAberturaErroSolicitada"
         "412":
           description: Erro genérico
           headers: {}
@@ -643,12 +652,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/VerificarAbertura"
         "403":
-          description: Idade não permitida
+          description: Proibido
           headers: {}
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VerificarAberturaErroIdade"
+                $ref: "#/components/schemas/VerificarAberturaErroProibido"
         "409":
           description: Conta já solicitada
           headers: {}
@@ -3454,13 +3463,16 @@ components:
           description: O cliente já possui uma conta digital aberta
           type: string
           example: Conta não pode ser solicitada novamente
-    VerificarAberturaErroIdade:
-      title: VerificarAberturaErroIdade
+    VerificarAberturaErroProibido:
+      title: VerificarAberturaErroProibido
       type: object
       properties:
         message:
-          description: A idade do cliente não permite abrir conta digital
+          description: Proibido
           type: string
+          enum:
+            - Idade do usuário é menor que 16 anos
+            - Email não foi confirmado.
           example: Idade do usuário é menor que 16 anos
     AlterarSenhaCartaoSucesso:
       title: CartaoSenhaSucesso
