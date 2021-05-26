@@ -475,7 +475,7 @@ paths:
               $ref: "#/components/schemas/CadastroInicialPfCorpo"
         required: true
       responses:
-        "200":
+        "201":
           description: Sucesso
           headers: {}
           content:
