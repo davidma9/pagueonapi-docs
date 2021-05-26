@@ -2888,7 +2888,7 @@ components:
         complemento:
           type: string
           description: Complemento do endereço do cliente
-          example: dspoqwkeq
+          example: "Condomínio A"
         municipio:
           type: string
           description: Município do endereço do cliente
@@ -2900,7 +2900,7 @@ components:
         data_nascimento:
           description: Data de nascimento do cliente de acordo com o documento
           type: string
-          example: 2002-01-01
+          example: "2002-01-01"
         genero:
           description: Gênero com o qual o cliente se identifica
           type: string
@@ -2929,7 +2929,7 @@ components:
         senha:
           description: Senha de movimentação financeira cadastrada pelo cliente
           type: string
-          example: 123456
+          example: "123456"
           minLength: 6
           maxLength: 6
     CadastroComplementarCorpo:
@@ -2983,7 +2983,7 @@ components:
         complemento:
           description: Complemento do endereço do cliente
           type: string
-          example: dspoqwkeq
+          example: "Condomínio A"
         municipio:
           description: Município do endereço do cliente
           type: string
@@ -3061,10 +3061,10 @@ components:
               properties:
                 agencia:
                   type: string
-                  example: 00001
+                  example: "00001"
                 numero:
                   type: string
-                  example: 182125
+                  example: "182125"
                 banco:
                   type: object
                   properties:
@@ -3073,10 +3073,10 @@ components:
                       example: Acesso Soluções de Pagamento S.A.
                     ispb:
                       type: string
-                      example: 13140088
+                      example: "13140088"
                     compe:
                       type: string
-                      example: 033
+                      example: "033"
         beneficiario:
           type: object
           properties:
@@ -3091,10 +3091,10 @@ components:
               properties:
                 agencia:
                   type: string
-                  example: 00001
+                  example: "00001"
                 numero:
                   type: string
-                  example: 182125
+                  example: "182125"
                 banco:
                   type: object
                   properties:
@@ -3103,10 +3103,10 @@ components:
                       example: Acesso Soluções de Pagamento S.A.
                     ispb:
                       type: string
-                      example: 13140088
+                      example: "13140088"
                     compe:
                       type: string
-                      example: 033
+                      example: "033"
                 tipo:
                   type: string
                   example: DEPOSIT
@@ -3118,10 +3118,10 @@ components:
           example: DONE
         data_cadastro:
           type: string
-          example: 05/05/2021 06:16:48
+          example: "05/05/2021 06:16:48"
         data_atualizacao:
           type: string
-          example: 05/05/2021 06:16:48
+          example: "05/05/2021 06:16:48"
     TransferenciaBancariaCorpo:
       title: ExtratoContaPfModel
       required:
@@ -3143,13 +3143,13 @@ components:
           properties:
             codigo_banco:
               type: string
-              example: 033
+              example: "033"
             agencia:
               type: string
-              example: 00001
+              example: "00001"
             conta:
               type: string
-              example: 182125
+              example: "182125"
             numero_documento:
               type: string
               example: "999999999999"
@@ -3194,7 +3194,7 @@ components:
         data_hora:
           description: Data/Hora da transação
           type: string
-          example: 22/03/2021 15:14:12
+          example: "22/03/2021 15:14:12"
     ObterTransferenciaBancariaNaoEncontrado:
       title: ObterTransferenciaNaoEncontrado
       type: object
@@ -3294,7 +3294,7 @@ components:
           example: Robertinho da Silva
         data_nascimento:
           type: string
-          example: 2002-01-01
+          example: "2002-01-01"
         genero:
           type: string
           example: M
@@ -3306,7 +3306,7 @@ components:
           example: "999999999"
         device_id:
           type: string
-          example: 8aac07cc-9a52-483d-bbbd-a0e6739fadd3
+          example: "8aac07cc-9a52-483d-bbbd-a0e6739fadd3"
         senha_cadastro:
           type: string
           example: dspoqwkeq
@@ -3521,7 +3521,7 @@ components:
         validade:
           description: Validade do cartão
           type: string
-          example: 05/09
+          example: "05/09"
         nome:
           description: Nome impresso no cartão
           type: string
@@ -3728,7 +3728,7 @@ components:
           example: Rua A
         logradouro:
           type: string
-          example: 00000000
+          example: "00000000"
         numero:
           type: string
           example: 111
@@ -3969,10 +3969,10 @@ components:
           example: Acesso Soluções De Pagamento S.A.
         ispb:
           type: string
-          example: 13140088
+          example: "13140088"
         codigo:
           type: string
-          example: 332
+          example: "332"
         apelido:
           type: string
           example: Acesso Solucoes Pagamento Sa
@@ -4057,7 +4057,7 @@ components:
         cpf:
           description: CPF cadastrado do cliente
           type: string
-          example: 99999999999
+          example: "99999999999"
           format: cpf
           minLength: 9
           maxLength: 9
@@ -4500,18 +4500,18 @@ components:
           properties:
             inicio:
               type: string
-              example: 05:00
+              example: "05:00"
             fim:
               type: string
-              example: 07:00
+              example: "07:00"
         data_vencimento:
           description: Data de vencimento do boleto
           type: string
-          example: 2021-04-15T00:00:00
+          example: "2021-04-15T00:00:00"
         data_efetivacao:
           description: Data que o pagamento foi efetuado
           type: string
-          example: 2021-04-15T00:00:00
+          example: "2021-04-15T00:00:00"
         avanca_vencimento:
           description: Avança vencimento do boleto
           type: boolean
@@ -4814,7 +4814,7 @@ components:
         codigo_autenticacao:
           description: Código que identifica o boleto para dados e impressão
           type: string
-          example: f947c084-1f2d-4192-bc2b-f328f3471844
+          example: "f947c084-1f2d-4192-bc2b-f328f3471844"
     EmitirBoletoBody:
       title: EmitirBoletoBody
       required:
@@ -4854,7 +4854,7 @@ components:
         vencimento:
           description: Data de vencimento do boleto
           type: string
-          example: 2021-09-20
+          example: "2021-09-20"
     ErroConsultaDadosBoleto:
       title: ErroConsultaDadosBoleto
       type: object
@@ -4895,7 +4895,7 @@ components:
         data_hora:
           description: Data/Hora da transação
           type: string
-          example: 2020-07-20T22:55:12
+          example: "2020-07-20T22:55:12"
     Message:
       title: Message
       description: Campo contendo uma descrição do erro ocorrido
@@ -5004,10 +5004,10 @@ components:
       properties:
         id_origem:
           type: string
-          example: ea8295fd-2bdc-452f-84f1-760f86c04aa1
+          example: "ea8295fd-2bdc-452f-84f1-760f86c04aa1"
         id_sistema:
           type: string
-          example: ea8295fd-2bdc-452f-84f1-760f86c04aa1
+          example: "ea8295fd-2bdc-452f-84f1-760f86c04aa1"
     Status:
       title: Status
       enum:
@@ -5052,7 +5052,7 @@ components:
         expiracao:
           description: Data de expiração do token de acesso
           type: string
-          example: 2021-03-25 23:51:03.664376+00:00
+          example: "2021-03-25 23:51:03.664376+00:00"
     TokenAtualizacao:
       title: TokenAtualizacao
       required:
@@ -5069,7 +5069,7 @@ components:
         expiracao:
           description: Data de expiração do token de refresh
           type: string
-          example: 2021-03-25 23:51:03.664376+00:00
+          example: "2021-03-25 23:51:03.664376+00:00"
         quantidade_refresh:
           description: Quantidade restante de renovações do token de acesso
           type: integer
