@@ -271,6 +271,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AtualizarPessoaFisicaRetorno"
+        "409":
+          description: Email não é válido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtualizarPessoaFisicaErroEmail"
         "422":
           description: Erro semântico ou de validação
           headers: {}
@@ -3755,6 +3762,14 @@ components:
         message:
           type: string
           example: Não há dispositivo vinculado a este usuário.
+    AtualizarPessoaFisicaErroEmail:
+      title: AtualizarPessoaFisicaErroEmail
+      type: object
+      properties:
+        message:
+          description: Email não é válido
+          type: string
+          example: Email não é válido
     ErroGenerico:
       title: ErroGenerico
       type: object
