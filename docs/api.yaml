@@ -3277,9 +3277,9 @@ components:
         - genero
         - ddd
         - telefone
-        - device_id
+        - chave_dispositivo
         - senha_cadastro
-        - senha_movimentacao
+        - senha_transacao
         - email
       type: object
       properties:
@@ -3304,13 +3304,13 @@ components:
         telefone:
           type: string
           example: "999999999"
-        device_id:
+        chave_dispositivo:
           type: string
           example: "8aac07cc-9a52-483d-bbbd-a0e6739fadd3"
         senha_cadastro:
           type: string
           example: dspoqwkeq
-        senha_movimentacao:
+        senha_transacao:
           type: string
           example: "999999"
         email:
