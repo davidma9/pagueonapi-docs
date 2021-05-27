@@ -2868,35 +2868,6 @@ components:
           type: string
           description: Email do cliente cadastrado
           example: abc@gmail.com
-        cep:
-          type: string
-          description: CEP do endereço do cliente
-          example: "9999999"
-        logradouro:
-          type: string
-          description: Logradouro do endereço do cliente
-          example: rua A
-        numero:
-          type: integer
-          description: Número do endereço do cliente
-          format: int32
-          example: 100
-        bairro:
-          type: string
-          description: Bairro do endereço do cliente
-          example: ABC
-        complemento:
-          type: string
-          description: Complemento do endereço do cliente
-          example: "Condomínio A"
-        municipio:
-          type: string
-          description: Município do endereço do cliente
-          example: Aracaju
-        uf:
-          type: string
-          description: Estado do endereço do cliente
-          example: SE
         data_nascimento:
           description: Data de nascimento do cliente de acordo com o documento
           type: string
