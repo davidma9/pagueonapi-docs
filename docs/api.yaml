@@ -1731,6 +1731,82 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErroGenerico"
       deprecated: false
+  /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}/ativar:
+    patch:
+      security:
+        - JWT: []
+      tags:
+        - Cartões
+      summary: Ativar um cartão físico
+      description: Ativar um cartão físico
+      operationId: Ativarcartaofisico
+      parameters:
+        - name: cd_usuario
+          in: path
+          description: "Identificador do usuário retornado no login"
+          required: true
+          style: simple
+          schema:
+            format: uuid
+            type: string
+        - name: proxy
+          in: path
+          description: "Proxy utilizando somente números, ex: 22999903520114195"
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ""
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartaoAtivacao"
+        required: true
+      responses:
+        "200":
+          description: Sucesso
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtivarCartaoSucesso"
+        "403":
+          description: Proibido
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtivarCartaoErroProibido"
+        "404":
+          description: Não encontrado
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtivarCartaoErroNaoEncontrado"
+        "503":
+          description: Erro Indisponível
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtivarCartaoErroNaoFoiPossivel"
+        "422":
+          description: Erro semântico ou de validação
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroValidacao"
+        "412":
+          description: Erro genérico
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroGenerico"
+      deprecated: false
   /contadigital/v1/contas/{cd_usuario}/cartoes/{proxy}:
     post:
       security:
@@ -3452,6 +3528,13 @@ components:
             - Idade do usuário é menor que 16 anos
             - Email não foi confirmado.
           example: Idade do usuário é menor que 16 anos
+    AtivarCartaoSucesso:
+      title: AtivarCartaoSucesso
+      type: object
+      properties:
+        ativado:
+          type: boolean
+          example: true
     AlterarSenhaCartaoSucesso:
       title: CartaoSenhaSucesso
       type: object
@@ -3459,6 +3542,20 @@ components:
         sucesso:
           type: boolean
           example: true
+    CartaoAtivacao:
+      title: CartaoAtivacao
+      required:
+        - senha
+      type: object
+      properties:
+        senha:
+          description: Senha para ser cadastrada no cartão
+          type: string
+          example: "1214"
+        activate_code:
+          description: Código de ativação do cartão
+          type: string
+          example: "A0DDDC0951D1"
     CartaoSenha:
       title: CartaoSenha
       required:
@@ -3515,6 +3612,12 @@ components:
       properties:
         message:
           $ref: "#/components/schemas/Message2"
+    AtivarCartaoErroProibido:
+      title: AtivarCartaoErroProibido
+      type: object
+      properties:
+        message:
+          example: "Cartão não possui status Enviado."
     DesbloquearCartao:
       title: DesbloquearCartao
       type: object
@@ -3563,6 +3666,17 @@ components:
           enum:
             - "O cartão precisa estar ativo, para realizar o bloqueio."
           example: "O cartão precisa estar ativo, para realizar o bloqueio."
+    AtivarCartaoErroNaoEncontrado:
+      title: AtivarCartaoErroNaoEncontrado
+      type: object
+      properties:
+        message:
+          description: Não encontrado
+          type: string
+          enum:
+            - "Conta não encontrada."
+            - "Cartão não encontrado."
+          example: "Cartão não encontrado."
     DesbloquearCartaoErroConflito:
       title: DesbloquarCartaoErroConflito
       type: object
@@ -3632,6 +3746,14 @@ components:
           description: Erro no serviço externo da Bankly
           type: string
           example: Não foi possível alterar senha do cartão.
+    AtivarCartaoErroNaoFoiPossivel:
+      title: AtivarCartaoErroNaoFoiPossivel
+      type: object
+      properties:
+        message:
+          description: Erro no serviço externo da Bankly
+          type: string
+          example: Não foi possível ativar o cartão.
     AlternarContactlessErroNaoFoiPossivel:
       title: AlternarContactlessErroNaoFoiPossivel
       type: object
